@@ -5,16 +5,26 @@ export default class Matrix extends Component {
   constructor() {
     super();
     this.state = {
-      cells: [
-        {
-          row_position: 1,
-          column_position: 1,
+      matrix: [
+        rows['0']
+      ],
+      cell: {
+        '11': {
           chartType: 'Pie',
           formula: '',
           title: 'Chart Thing'
         }
-      ],
-      rows: [1],
+      },
+      rows: {
+        '0': {
+          cells: [
+            this.state.cell['11'],
+          ],
+        }
+      },
+      row_array: [
+        rows['0']
+      ]
       columnCount: 1
     };
     this.addCell = this.addCell.bind(this);

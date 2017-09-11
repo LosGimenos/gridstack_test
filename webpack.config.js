@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const config = {
   context: path.join(__dirname, 'client'),
   entry: [
-            './index.js',
+            './index.jsx',
             'webpack/hot/dev-server',
             'webpack-dev-server/client?http://localhost:8080'
          ],
@@ -20,12 +20,12 @@ const config = {
         loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
-          presets: ['es2015'],
+          presets: ['es2015', 'react'],
         }
       },
       {
-        test: /\.scss$/,
-        loader: ['style-loader', 'css-loader', 'sass-loader']
+        test: /\.css$/,
+        loader: ['style-loader', 'css-loader']
       }
     ],
   },

@@ -4,32 +4,33 @@ import Cell from './cell.jsx';
 export default class Row extends Component {
   constructor(props) {
     super(props);
-    this.name = props.level;
   }
 
   renderCells() {
-    return this.props.cells.map((cell) => {
-      if (cell.row_position == this.name) {
-        return (
-          <Cell
-            title={cell.title}
-            formula={cell.formula}
-            row_position={cell.row_position}
-            column_position={cell.column_position}
-            chart={cell.chartType}
-            addCell={this.props.addCell}
-            deleteCell={this.props.deleteCell}
-          />
-        );
-      }
+    return this.props.cellsInRow.map((cell) => {
+      return (
+        <Cell
+          title={cell.title}
+          formula={cell.formula}
+          cellId={cell.id}
+          chart={cell.chartType}
+          addCell={this.props.addCell}
+          cellsInRow={this.props.cellsInRow}
+          rowId={this.props.rowId}
+          copyCell={this.props.copyCell}
+          collectHoveredCells={this.props.collectHoveredCells}
+          copyFromHover={this.props.copyFromHover}
+        />
+      );
     })
   }
 
   render() {
     return (
-      <div className='row' name={`row${this.name}`}>
+      <div className='row'>
         { this.renderCells() }
       </div>
     );
   }
 }
+

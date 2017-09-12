@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Row from './row.jsx';
+import Chart from './chart.jsx';
 
 export default class Matrix extends Component {
   constructor() {
@@ -9,13 +10,17 @@ export default class Matrix extends Component {
           id: 11,
           chartType: 'Pie',
           formula: '',
-          title: 'Chart Thing'
+          title: 'Chart Thing',
+          hasChart: false,
+          chartId: ''
         },
         '12': {
           id: 12,
           chartType: 'Graph',
           formula: 'woot',
-          title: 'Graph Thing'
+          title: 'Graph Thing',
+          hasChart: false,
+          chartId: ''
         }
       };
       this.rows = {
@@ -29,6 +34,7 @@ export default class Matrix extends Component {
       this.hoveredCells = [];
     this.state = {
       cells: this.cells,
+      charts: {},
       row_array: [
         this.rows['1']
       ],
@@ -41,21 +47,48 @@ export default class Matrix extends Component {
     this.copyCell = this.copyCell.bind(this);
     this.collectHoveredCells = this.collectHoveredCells.bind(this);
     this.copyFromHover = this.copyFromHover.bind(this);
+    this.clearCell = this.clearCell.bind(this);
+    this.addChart = this.addChart.bind(this);
+    this.setChartToCell = this.setChartToCell.bind(this);
     // this.deleteCell = this.deleteCell.bind(this);
   }
 
   addRow() {
     const rowArray = this.state.row_array;
+    const cells = this.cells;
     const row_index = rowArray.length;
-    this.rows[(row_index + 1).toString()] = {
-      row_id: row_index + 1,
-      cellsInRow: []
+    const workingRow = this.rows[row_index + 1] = {
+                        row_id: row_index + 1,
+                        cellsInRow: []
+                       };
+    const firstCellId = (row_index + 1).toString() + '1';
+    const firstCell = cells[firstCellId] = {
+                        id: firstCellId,
+                        chartType: '',
+                        formula: '',
+                        title: ''
+                      }
+    workingRow['cellsInRow'].push(firstCell);
+
+    const idValues = [];
+    while (workingRow['cellsInRow'].length < this.state.columnCount) {
+      workingRow['cellsInRow'].forEach((cell) => {
+        if (cell['id']) {
+          idValues.push(parseInt(cell['id']));
+        }
+      })
+      const highestIdValue = Math.max.apply(null, idValues);
+      const newCell = cells[highestIdValue + 1] = {
+        id: highestIdValue + 1,
+        chartType: '',
+        formula: '',
+        title: ''
+      }
+      workingRow['cellsInRow'].push(newCell);
     };
-    while (this.rows[(row_index + 1).toString()]['cellsInRow'].length < this.state.columnCount) {
-      this.rows[(row_index + 1).toString()]['cellsInRow'].push('');
-    }
-    const row = this.rows[(row_index + 1).toString()];
-    rowArray.push(row);
+    rowArray.push(workingRow);
+    this.cells = cells;
+    this.setState({ cells: cells });
     this.setState({ row_array: rowArray });
   }
 
@@ -63,11 +96,26 @@ export default class Matrix extends Component {
     if (this.state.columnCount < 8) {
       this.state.row_array.forEach((row) => {
         while (row['cellsInRow'].length < this.state.columnCount + 1) {
-          row['cellsInRow'].push('');
+          const idValues = [];
+          row['cellsInRow'].forEach((cell) => {
+            if (cell['id']) {
+              idValues.push(parseInt(cell['id']));
+            }
+          })
+          const highestIdValue = Math.max.apply(null, idValues);
+
+          this.cells[highestIdValue + 1] = {
+            id: highestIdValue + 1,
+            chartType: '',
+            formula: '',
+            title: ''
+          };
+          row['cellsInRow'].push(this.cells[highestIdValue + 1]);
         }
       })
     }
     this.setState({ columnCount: this.state.columnCount + 1 });
+    this.setState({ cells: this.cells });
   }
 
   addCell(cellsInRow, row_id) {
@@ -123,9 +171,12 @@ export default class Matrix extends Component {
     const cells = this.cells;
     const cellsToCopy = this.hoveredCells;
     cellsToCopy.forEach((cell) => {
-      cells[cell]['chartType'] = cells[masterCell]['chartType'];
-      cells[cell]['formula'] = cells[masterCell]['formula'];
-      cells[cell]['title'] = cells[masterCell]['title'];
+      const chartType = cells[masterCell]['chartType'];
+      const formula = cells[masterCell]['formula'];
+      const title = cells[masterCell]['title'];
+      cells[cell]['chartType'] = chartType;
+      cells[cell]['formula'] = formula;
+      cells[cell]['title'] = title;
     });
 
     this.cells = cells;
@@ -135,6 +186,48 @@ export default class Matrix extends Component {
 
   collectHoveredCells(cellId) {
     this.hoveredCells.push(cellId);
+  }
+
+  clearCell(cellId) {
+    console.log(cellId, this.cells)
+    const cells = this.cells;
+    cells[cellId]['chartType'] = '';
+    cells[cellId]['formula'] = '';
+    cells[cellId]['title'] = '';
+    console.log(cells)
+    this.cells = cells;
+    this.setState({ cells: this.cells});
+  }
+
+  addChart(chartType) {
+    const charts = this.state.charts;
+    const chartKeys = Object.keys(charts);
+    let chartId = null;
+    if (chartKeys.length == 0) {
+      chartKeys[0] = {
+        id: 0,
+        chartType: chartType,
+      }
+      chartId = 0;
+    } else {
+        const highestIdValue = Math.max.apply(null, chartKeys);
+        chartKeys[highestIdValue + 1] = {
+          id: highestIdValue + 1,
+          chartType: chartType
+        }
+        chartId = highestIdValue + 1;
+    }
+    this.setState({ charts: charts });
+    return chartId;
+  }
+
+  setChartToCell(cellId, chartId) {
+    const cells = this.cells;
+    cells[cellId]['hasChart'] = true;
+    cells[cellId]['chartId'] = chartId;
+
+    this.cells = cells;
+    this.setState({ cells: this.cells });
   }
 
   // deleteCell(row, column) {
@@ -160,6 +253,10 @@ export default class Matrix extends Component {
           copyCell={this.copyCell}
           collectHoveredCells={this.collectHoveredCells}
           copyFromHover={this.copyFromHover}
+          clearCell={this.clearCell}
+          addChart={this.addChart}
+          setChartToCell={this.setChartToCell}
+          charts={this.state.charts}
         />
       );
     })

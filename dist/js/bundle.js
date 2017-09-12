@@ -60,7 +60,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "e6353445850e7d3ecacf"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "0af46496989e52140cf5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -9901,7 +9901,7 @@ exports = module.exports = __webpack_require__(287)(undefined);
 
 
 // module
-exports.push([module.i, ".gu-mirror {\n  position: fixed !important;\n  margin: 0 !important;\n  z-index: 9999 !important;\n  opacity: 0.8;\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)\";\n  filter: alpha(opacity=80);\n}\n.gu-hide {\n  display: none !important;\n}\n.gu-unselectable {\n  -webkit-user-select: none !important;\n  -moz-user-select: none !important;\n  -ms-user-select: none !important;\n  user-select: none !important;\n}\n.gu-transit {\n  opacity: 0.2;\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=20)\";\n  filter: alpha(opacity=20);\n}\n\n.wrapper {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  width: 100%;\n  height: 100%;\n}\n\n#left {\n  display: flex;\n  justify-content: space-around;\n  width: 100%;\n  height: 20vh;\n  background-color: blue;\n}\n\n.fill {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 95%;\n  width: 200px;\n  background-color: #95a5a6;\n  color: white;\n  letter-spacing: 1px;\n  border-radius: 5px;\n  cursor: pointer;\n  border: 2px solid white;\n}\n\n.fill p {\n  margin: 0;\n  padding: 0;\n}\n\n.choice-page__wrapper {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n}\n\n.choice-wrapper {\n  display: flex;\n  justify-content: space-around;\n  width: 100%;\n}\n\n.choice {\n  text-align: center;\n  background-color: #95a5a6;\n  border: 1px solid black;\n  width: 18%;\n  border-radius: 10px;\n  color: white;\n  cursor: pointer;\n}\n\n.choice :hover {\n  background-color: black;\n}\n\n.submit-choices {\n  background-color: #358DFF;\n  margin-top: 10%;\n  width: 10%;\n  height: 3em;\n  border-radius: 10px;\n}\n\n.matrix {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  top: 7vh;\n  left: 5%;\n  border: 1px solid black;\n  width: 70vw;\n  height: 90vh;\n}\n\n.row {\n  border: 1px solid black;\n  display: flex;\n  height: 25%;\n  width: 100%;\n}\n\n.cell {\n  position: relative;\n  width: 25%;\n  height: 100%;\n  border: 1px solid blue;\n  text-align: center;\n  cursor: pointer;\n}\n\n.button__cell {\n  position: absolute;\n  left: 0;\n  background-color: red;\n}\n\n/*.column {\n  border: 1px solid black;\n  background: transparent;\n  width: 25%;\n  height: 100%;\n}*/\n\n.button__addRow {\n  position: absolute;\n  left: 3%;\n  top: 7%;\n  cursor: pointer;\n}\n\n.button__addColumn {\n  position: absolute;\n  left: 7%;\n  cursor: pointer;\n}\n\n\n", ""]);
+exports.push([module.i, ".gu-mirror {\n  position: fixed !important;\n  margin: 0 !important;\n  z-index: 9999 !important;\n  opacity: 0.8;\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)\";\n  filter: alpha(opacity=80);\n}\n.gu-hide {\n  display: none !important;\n}\n.gu-unselectable {\n  -webkit-user-select: none !important;\n  -moz-user-select: none !important;\n  -ms-user-select: none !important;\n  user-select: none !important;\n}\n.gu-transit {\n  opacity: 0.2;\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=20)\";\n  filter: alpha(opacity=20);\n}\n\n.wrapper {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  width: 100%;\n  height: 100%;\n}\n\n#left {\n  display: flex;\n  justify-content: space-around;\n  width: 100%;\n  height: 20vh;\n  background-color: blue;\n}\n\n.fill {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 95%;\n  width: 200px;\n  background-color: #95a5a6;\n  color: white;\n  letter-spacing: 1px;\n  border-radius: 5px;\n  cursor: pointer;\n  border: 2px solid white;\n}\n\n.fill p {\n  margin: 0;\n  padding: 0;\n}\n\n.choice-page__wrapper {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n}\n\n.choice-wrapper {\n  display: flex;\n  justify-content: space-around;\n  width: 100%;\n}\n\n.choice {\n  text-align: center;\n  background-color: #95a5a6;\n  border: 1px solid black;\n  width: 18%;\n  border-radius: 10px;\n  color: white;\n  cursor: pointer;\n}\n\n.choice :hover {\n  background-color: black;\n}\n\n.submit-choices {\n  background-color: #358DFF;\n  margin-top: 10%;\n  width: 10%;\n  height: 3em;\n  border-radius: 10px;\n}\n\n.matrix {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  top: 7vh;\n  left: 5%;\n  border: 1px solid black;\n  width: 70vw;\n  height: 90vh;\n}\n\n.row {\n  border: 1px solid black;\n  display: flex;\n  height: 25%;\n  width: 100%;\n}\n\n.cell {\n  position: relative;\n  width: 25%;\n  height: 100%;\n  border: 1px solid blue;\n  text-align: center;\n  cursor: pointer;\n}\n\n.button__cell--clear {\n  position: absolute;\n  left: 0;\n  background-color: red;\n}\n\n.button__cell--import {\n  position: absolute;\n  right: 0;\n  background-color: green;\n}\n\n/*.column {\n  border: 1px solid black;\n  background: transparent;\n  width: 25%;\n  height: 100%;\n}*/\n\n.button__addRow {\n  position: absolute;\n  left: 3%;\n  top: 7%;\n  cursor: pointer;\n}\n\n.button__addColumn {\n  position: absolute;\n  left: 7%;\n  cursor: pointer;\n}\n\n.object {\n  position: absolute;\n  margin-left: 25%;\n  margin-top: 8%;\n  width: 100px;\n  height: 100px;\n  border: 1px solid black;\n  background-color: DarkSeaGreen;\n}\n\n.sizer-nodule {\n  position: relative;\n  width: 15px;\n  height: 15px;\n  top: 90%;\n  left: 90%;\n  background-color: black;\n  border-radius: 10px;\n}\n\n\n", ""]);
 
 // exports
 
@@ -32534,6 +32534,10 @@ var _row = __webpack_require__(284);
 
 var _row2 = _interopRequireDefault(_row);
 
+var _chart = __webpack_require__(341);
+
+var _chart2 = _interopRequireDefault(_chart);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -32555,13 +32559,17 @@ var Matrix = function (_Component) {
         id: 11,
         chartType: 'Pie',
         formula: '',
-        title: 'Chart Thing'
+        title: 'Chart Thing',
+        hasChart: false,
+        chartId: ''
       },
       '12': {
         id: 12,
         chartType: 'Graph',
         formula: 'woot',
-        title: 'Graph Thing'
+        title: 'Graph Thing',
+        hasChart: false,
+        chartId: ''
       }
     };
     _this.rows = {
@@ -32573,6 +32581,7 @@ var Matrix = function (_Component) {
     _this.hoveredCells = [];
     _this.state = {
       cells: _this.cells,
+      charts: {},
       row_array: [_this.rows['1']],
       matrix: [_this.rows['1']],
       columnCount: 2
@@ -32581,6 +32590,9 @@ var Matrix = function (_Component) {
     _this.copyCell = _this.copyCell.bind(_this);
     _this.collectHoveredCells = _this.collectHoveredCells.bind(_this);
     _this.copyFromHover = _this.copyFromHover.bind(_this);
+    _this.clearCell = _this.clearCell.bind(_this);
+    _this.addChart = _this.addChart.bind(_this);
+    _this.setChartToCell = _this.setChartToCell.bind(_this);
     // this.deleteCell = this.deleteCell.bind(this);
     return _this;
   }
@@ -32589,16 +32601,40 @@ var Matrix = function (_Component) {
     key: 'addRow',
     value: function addRow() {
       var rowArray = this.state.row_array;
+      var cells = this.cells;
       var row_index = rowArray.length;
-      this.rows[(row_index + 1).toString()] = {
+      var workingRow = this.rows[row_index + 1] = {
         row_id: row_index + 1,
         cellsInRow: []
       };
-      while (this.rows[(row_index + 1).toString()]['cellsInRow'].length < this.state.columnCount) {
-        this.rows[(row_index + 1).toString()]['cellsInRow'].push('');
-      }
-      var row = this.rows[(row_index + 1).toString()];
-      rowArray.push(row);
+      var firstCellId = (row_index + 1).toString() + '1';
+      var firstCell = cells[firstCellId] = {
+        id: firstCellId,
+        chartType: '',
+        formula: '',
+        title: ''
+      };
+      workingRow['cellsInRow'].push(firstCell);
+
+      var idValues = [];
+      while (workingRow['cellsInRow'].length < this.state.columnCount) {
+        workingRow['cellsInRow'].forEach(function (cell) {
+          if (cell['id']) {
+            idValues.push(parseInt(cell['id']));
+          }
+        });
+        var highestIdValue = Math.max.apply(null, idValues);
+        var newCell = cells[highestIdValue + 1] = {
+          id: highestIdValue + 1,
+          chartType: '',
+          formula: '',
+          title: ''
+        };
+        workingRow['cellsInRow'].push(newCell);
+      };
+      rowArray.push(workingRow);
+      this.cells = cells;
+      this.setState({ cells: cells });
       this.setState({ row_array: rowArray });
     }
   }, {
@@ -32608,12 +32644,31 @@ var Matrix = function (_Component) {
 
       if (this.state.columnCount < 8) {
         this.state.row_array.forEach(function (row) {
+          var _loop = function _loop() {
+            var idValues = [];
+            row['cellsInRow'].forEach(function (cell) {
+              if (cell['id']) {
+                idValues.push(parseInt(cell['id']));
+              }
+            });
+            var highestIdValue = Math.max.apply(null, idValues);
+
+            _this2.cells[highestIdValue + 1] = {
+              id: highestIdValue + 1,
+              chartType: '',
+              formula: '',
+              title: ''
+            };
+            row['cellsInRow'].push(_this2.cells[highestIdValue + 1]);
+          };
+
           while (row['cellsInRow'].length < _this2.state.columnCount + 1) {
-            row['cellsInRow'].push('');
+            _loop();
           }
         });
       }
       this.setState({ columnCount: this.state.columnCount + 1 });
+      this.setState({ cells: this.cells });
     }
   }, {
     key: 'addCell',
@@ -32672,9 +32727,12 @@ var Matrix = function (_Component) {
       var cells = this.cells;
       var cellsToCopy = this.hoveredCells;
       cellsToCopy.forEach(function (cell) {
-        cells[cell]['chartType'] = cells[masterCell]['chartType'];
-        cells[cell]['formula'] = cells[masterCell]['formula'];
-        cells[cell]['title'] = cells[masterCell]['title'];
+        var chartType = cells[masterCell]['chartType'];
+        var formula = cells[masterCell]['formula'];
+        var title = cells[masterCell]['title'];
+        cells[cell]['chartType'] = chartType;
+        cells[cell]['formula'] = formula;
+        cells[cell]['title'] = title;
       });
 
       this.cells = cells;
@@ -32685,6 +32743,51 @@ var Matrix = function (_Component) {
     key: 'collectHoveredCells',
     value: function collectHoveredCells(cellId) {
       this.hoveredCells.push(cellId);
+    }
+  }, {
+    key: 'clearCell',
+    value: function clearCell(cellId) {
+      console.log(cellId, this.cells);
+      var cells = this.cells;
+      cells[cellId]['chartType'] = '';
+      cells[cellId]['formula'] = '';
+      cells[cellId]['title'] = '';
+      console.log(cells);
+      this.cells = cells;
+      this.setState({ cells: this.cells });
+    }
+  }, {
+    key: 'addChart',
+    value: function addChart(chartType) {
+      var charts = this.state.charts;
+      var chartKeys = Object.keys(charts);
+      var chartId = null;
+      if (chartKeys.length == 0) {
+        chartKeys[0] = {
+          id: 0,
+          chartType: chartType
+        };
+        chartId = 0;
+      } else {
+        var highestIdValue = Math.max.apply(null, chartKeys);
+        chartKeys[highestIdValue + 1] = {
+          id: highestIdValue + 1,
+          chartType: chartType
+        };
+        chartId = highestIdValue + 1;
+      }
+      this.setState({ charts: charts });
+      return chartId;
+    }
+  }, {
+    key: 'setChartToCell',
+    value: function setChartToCell(cellId, chartId) {
+      var cells = this.cells;
+      cells[cellId]['hasChart'] = true;
+      cells[cellId]['chartId'] = chartId;
+
+      this.cells = cells;
+      this.setState({ cells: this.cells });
     }
 
     // deleteCell(row, column) {
@@ -32712,7 +32815,11 @@ var Matrix = function (_Component) {
           addCell: _this3.addCell,
           copyCell: _this3.copyCell,
           collectHoveredCells: _this3.collectHoveredCells,
-          copyFromHover: _this3.copyFromHover
+          copyFromHover: _this3.copyFromHover,
+          clearCell: _this3.clearCell,
+          addChart: _this3.addChart,
+          setChartToCell: _this3.setChartToCell,
+          charts: _this3.state.charts
         });
       });
     }
@@ -32817,12 +32924,18 @@ var Row = function (_Component) {
           formula: cell.formula,
           cellId: cell.id,
           chart: cell.chartType,
+          chartId: cell.chartId,
+          hasChart: cell.hasChart,
           addCell: _this2.props.addCell,
           cellsInRow: _this2.props.cellsInRow,
           rowId: _this2.props.rowId,
           copyCell: _this2.props.copyCell,
           collectHoveredCells: _this2.props.collectHoveredCells,
-          copyFromHover: _this2.props.copyFromHover
+          copyFromHover: _this2.props.copyFromHover,
+          clearCell: _this2.props.clearCell,
+          addChart: _this2.props.addChart,
+          setChartToCell: _this2.props.setChartToCell,
+          charts: _this2.props.charts
         });
       });
     }
@@ -32857,6 +32970,10 @@ var _react = __webpack_require__(9);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _chart = __webpack_require__(341);
+
+var _chart2 = _interopRequireDefault(_chart);
+
 var _propTypes = __webpack_require__(14);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -32869,23 +32986,25 @@ var propTypes = {
 
 var Cell = function Cell(_ref) {
   var title = _ref.title,
+      hasChart = _ref.hasChart,
       chart = _ref.chart,
+      chartId = _ref.chartId,
       cellId = _ref.cellId,
       rowId = _ref.rowId,
       formula = _ref.formula,
+      charts = _ref.charts,
       copyCell = _ref.copyCell,
       cellsInRow = _ref.cellsInRow,
       collectHoveredCells = _ref.collectHoveredCells,
-      copyFromHover = _ref.copyFromHover;
+      copyFromHover = _ref.copyFromHover,
+      clearCell = _ref.clearCell,
+      addChart = _ref.addChart,
+      setChartToCell = _ref.setChartToCell;
   return _react2.default.createElement(
     'div',
     {
       className: 'cell',
       name: cellId,
-      onClick: function onClick() {
-        copyCell(cellsInRow, rowId, cellId);
-      },
-      draggable: 'true',
       onDragStart: function onDragStart(event) {
         event.dataTransfer.setData('masterCell', cellId);
       },
@@ -32902,11 +33021,36 @@ var Cell = function Cell(_ref) {
         copyFromHover(masterCell);
       }
     },
-    _react2.default.createElement(
-      'button',
-      { className: 'button__cell' },
-      'X'
+    !hasChart && _react2.default.createElement(
+      'select',
+      {
+        className: 'button__cell--import',
+        name: 'add-chart',
+        defaultValue: 'Add',
+        onChange: function onChange(event) {
+          setChartToCell(cellId, addChart(event.target.value));
+        }
+      },
+      _react2.default.createElement(
+        'option',
+        null,
+        'ADD'
+      ),
+      _react2.default.createElement(
+        'option',
+        { value: 'pie' },
+        'Pie Chart'
+      ),
+      _react2.default.createElement(
+        'option',
+        { value: 'bar' },
+        'Bar Graph'
+      )
     ),
+    hasChart && _react2.default.createElement(_chart2.default, {
+      chartId: chartId,
+      charts: charts
+    }),
     _react2.default.createElement(
       'span',
       null,
@@ -32914,25 +33058,6 @@ var Cell = function Cell(_ref) {
         'h2',
         null,
         cellId
-      )
-    ),
-    _react2.default.createElement(
-      'span',
-      null,
-      _react2.default.createElement(
-        'p',
-        null,
-        title
-      )
-    ),
-    _react2.default.createElement(
-      'span',
-      null,
-      _react2.default.createElement(
-        'p',
-        null,
-        'render: ',
-        chart
       )
     )
   );
@@ -39413,6 +39538,59 @@ webpackContext.keys = function webpackContextKeys() {
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
 webpackContext.id = 340;
+
+/***/ }),
+/* 341 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(9);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Chart = function Chart(_ref) {
+  var charts = _ref.charts,
+      chartId = _ref.chartId;
+  return _react2.default.createElement(
+    'div',
+    { className: 'object' },
+    _react2.default.createElement(
+      'button',
+      { className: 'button__cell--clear' },
+      'X'
+    ),
+    _react2.default.createElement('div', { className: 'sizer-nodule', draggable: 'true' }),
+    _react2.default.createElement(
+      'span',
+      null,
+      _react2.default.createElement(
+        'p',
+        null,
+        console.log(charts[chartId])
+      )
+    ),
+    _react2.default.createElement(
+      'span',
+      null,
+      _react2.default.createElement(
+        'p',
+        null,
+        'id: ',
+        chartId
+      )
+    )
+  );
+};
+
+exports.default = Chart;
 
 /***/ })
 /******/ ]);

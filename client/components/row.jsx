@@ -14,12 +14,18 @@ export default class Row extends Component {
           formula={cell.formula}
           cellId={cell.id}
           chart={cell.chartType}
+          chartId={cell.chartId}
+          hasChart={cell.hasChart}
           addCell={this.props.addCell}
           cellsInRow={this.props.cellsInRow}
           rowId={this.props.rowId}
           copyCell={this.props.copyCell}
           collectHoveredCells={this.props.collectHoveredCells}
           copyFromHover={this.props.copyFromHover}
+          clearCell={this.props.clearCell}
+          addChart={this.props.addChart}
+          setChartToCell={this.props.setChartToCell}
+          charts={this.props.charts}
         />
       );
     })

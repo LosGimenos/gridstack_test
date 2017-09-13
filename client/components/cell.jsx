@@ -59,7 +59,7 @@ const Cell = ({ title,
       hasChart &&
       <Chart
         chartId={chartId}
-        charts={charts}
+        chartType={charts[chartId]['chartType']}
       />
     }
     <span><h2>{ cellId }</h2></span>

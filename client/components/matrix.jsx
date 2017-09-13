@@ -204,14 +204,14 @@ export default class Matrix extends Component {
     const chartKeys = Object.keys(charts);
     let chartId = null;
     if (chartKeys.length == 0) {
-      chartKeys[0] = {
+      charts[0] = {
         id: 0,
         chartType: chartType,
       }
       chartId = 0;
     } else {
         const highestIdValue = Math.max.apply(null, chartKeys);
-        chartKeys[highestIdValue + 1] = {
+        charts[highestIdValue + 1] = {
           id: highestIdValue + 1,
           chartType: chartType
         }

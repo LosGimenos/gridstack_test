@@ -8,18 +8,16 @@ export default class Matrix extends Component {
       this.cells = {
         '11': {
           id: 11,
-          chartType: 'Pie',
-          formula: '',
-          title: 'Chart Thing',
           hasChart: false,
+          hasSharedChart: false,
+          canAddChart: true,
           chartId: ''
         },
         '12': {
           id: 12,
-          chartType: 'Graph',
-          formula: 'woot',
-          title: 'Graph Thing',
           hasChart: false,
+          hasSharedChart: false,
+          canAddChart: true,
           chartId: ''
         }
       };
@@ -31,7 +29,6 @@ export default class Matrix extends Component {
           ]
         }
       };
-      this.hoveredCells = [];
     this.state = {
       cells: this.cells,
       charts: {},
@@ -44,12 +41,15 @@ export default class Matrix extends Component {
       columnCount: 2
     };
     this.addCell = this.addCell.bind(this);
-    this.copyCell = this.copyCell.bind(this);
-    this.collectHoveredCells = this.collectHoveredCells.bind(this);
-    this.copyFromHover = this.copyFromHover.bind(this);
     this.clearCell = this.clearCell.bind(this);
     this.addChart = this.addChart.bind(this);
     this.setChartToCell = this.setChartToCell.bind(this);
+    this.checkHasChart = this.checkHasChart.bind(this);
+    this.setSharedChartToCell = this.setSharedChartToCell.bind(this);
+    this.checkHasSharedChart = this.checkHasSharedChart.bind(this);
+    this.checkNumRowsAndColumns = this.checkNumRowsAndColumns.bind(this);
+    this.getCell = this.getCell.bind(this);
+    this.updateCells = this.updateCells.bind(this);
     // this.deleteCell = this.deleteCell.bind(this);
   }
 
@@ -63,10 +63,8 @@ export default class Matrix extends Component {
                        };
     const firstCellId = (row_index + 1).toString() + '1';
     const firstCell = cells[firstCellId] = {
-                        id: firstCellId,
-                        chartType: '',
-                        formula: '',
-                        title: ''
+                        id: parseInt(firstCellId),
+                        canAddChart: true
                       }
     workingRow['cellsInRow'].push(firstCell);
 
@@ -80,9 +78,7 @@ export default class Matrix extends Component {
       const highestIdValue = Math.max.apply(null, idValues);
       const newCell = cells[highestIdValue + 1] = {
         id: highestIdValue + 1,
-        chartType: '',
-        formula: '',
-        title: ''
+        canAddChart: true
       }
       workingRow['cellsInRow'].push(newCell);
     };
@@ -106,9 +102,7 @@ export default class Matrix extends Component {
 
           this.cells[highestIdValue + 1] = {
             id: highestIdValue + 1,
-            chartType: '',
-            formula: '',
-            title: ''
+            canAddChart: true
           };
           row['cellsInRow'].push(this.cells[highestIdValue + 1]);
         }
@@ -124,79 +118,24 @@ export default class Matrix extends Component {
     const cell_id = row_id.toString() + positionInRow.toString();
     cells[cell_id] = {
       id: parseInt(cell_id),
-      chartType: '',
-      formula: '',
-      title: ''
     };
     this.cells = cells;
     const rowToPush = this.rows[row_id];
     this.rows[row_id.toString()]['cellsInRow'].push(this.cells[cell_id]);
   }
 
-  copyCell(cellsInRow, rowId, cellId) {
-    const cells = this.cells;
-    const cellIndex = this.rows[rowId]['cellsInRow'].findIndex((cell) => {
-      return cell.id == cellId;
-    })
-
-    const idValues = [];
-    this.rows[rowId]['cellsInRow'].forEach((cell) => {
-      if (cell['id']) {
-        idValues.push(parseInt(cell['id']));
-      }
-    })
-
-    const highestIdValue = Math.max.apply(null, idValues);
-    const cellToBeCopied = this.rows[rowId]['cellsInRow'][cellIndex + 1]
-
-    if (!cellToBeCopied && idValues.length < this.state.columnCount) {
-      cells[highestIdValue + 1] = {
-        id: highestIdValue + 1,
-        chartType: cells[cellId]['chartType'],
-        formula: cells[cellId]['formula'],
-        title: cells[cellId]['title']
-      }
-      this.rows[rowId]['cellsInRow'][cellIndex + 1] = cells[highestIdValue + 1];
-    } else if (cellToBeCopied && idValues.length <= this.state.columnCount) {
-      cells[cellToBeCopied['id']]['chartType'] =cells[cellId]['chartType'];
-      cells[cellToBeCopied['id']]['formula'] =cells[cellId]['formula'];
-      cells[cellToBeCopied['id']]['title'] =cells[cellId]['title'];
-    }
-
-    this.cells = cells;
-    this.setState({ cells: cells });
-  }
-
-  copyFromHover(masterCell) {
-    const cells = this.cells;
-    const cellsToCopy = this.hoveredCells;
-    cellsToCopy.forEach((cell) => {
-      const chartType = cells[masterCell]['chartType'];
-      const formula = cells[masterCell]['formula'];
-      const title = cells[masterCell]['title'];
-      cells[cell]['chartType'] = chartType;
-      cells[cell]['formula'] = formula;
-      cells[cell]['title'] = title;
-    });
-
-    this.cells = cells;
-    this.hoveredCells = [];
-    this.setState({ cells: cells });
-  }
-
-  collectHoveredCells(cellId) {
-    this.hoveredCells.push(cellId);
-  }
-
   clearCell(cellId) {
-    console.log(cellId, this.cells)
     const cells = this.cells;
-    cells[cellId]['chartType'] = '';
-    cells[cellId]['formula'] = '';
-    cells[cellId]['title'] = '';
-    console.log(cells)
+    cells[cellId] = {
+      id: parseInt(cellId),
+      hasChart: false,
+      hasSharedChart: false,
+      canAddChart: true,
+      chartId: ''
+    }
     this.cells = cells;
-    this.setState({ cells: this.cells});
+    this.setState({ cells: this.cells });
+    console.log(cells[cellId])
   }
 
   addChart(chartType) {
@@ -225,9 +164,41 @@ export default class Matrix extends Component {
     const cells = this.cells;
     cells[cellId]['hasChart'] = true;
     cells[cellId]['chartId'] = chartId;
+    this.cells = cells;
+    this.setState({ cells: this.cells });
+  }
+
+  setSharedChartToCell(cellId, chartId) {
+    const cells = this.cells;
+    cells[cellId]['hasSharedChart'] = true;
+    cells[cellId]['chartId'] = chartId;
 
     this.cells = cells;
     this.setState({ cells: this.cells });
+  }
+
+  checkHasChart(cellId) {
+    return this.cells[cellId]['hasChart'];
+  }
+
+  checkHasSharedChart(cellId) {
+    return this.cells[cellId]['hasSharedChart'];
+  }
+
+  checkNumRowsAndColumns() {
+    return {
+      columnCount: this.state.columnCount,
+      rowCount: this.state.row_array.length
+    }
+  }
+
+  getCell(cellId) {
+    return this.cells[cellId];
+  }
+
+  updateCells(cell) {
+    this.cells = cells;
+    this.setState({ cells });
   }
 
   // deleteCell(row, column) {
@@ -250,13 +221,16 @@ export default class Matrix extends Component {
           cellsInRow={row['cellsInRow']}
           rowId={row['row_id']}
           addCell={this.addCell}
-          copyCell={this.copyCell}
-          collectHoveredCells={this.collectHoveredCells}
-          copyFromHover={this.copyFromHover}
           clearCell={this.clearCell}
           addChart={this.addChart}
           setChartToCell={this.setChartToCell}
           charts={this.state.charts}
+          checkHasChart={this.checkHasChart}
+          setSharedChartToCell={this.setSharedChartToCell}
+          checkHasSharedChart={this.checkHasSharedChart}
+          checkNumRowsAndColumns={this.checkNumRowsAndColumns}
+          getCell={this.getCell}
+          updateCells={this.updateCells}
         />
       );
     })

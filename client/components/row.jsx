@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Cell from './cell.jsx';
+// import Cell from './cell.jsx';
+import MatrixCell from './matrixCell.jsx';
 
 export default class Row extends Component {
   constructor(props) {
@@ -9,23 +10,24 @@ export default class Row extends Component {
   renderCells() {
     return this.props.cellsInRow.map((cell) => {
       return (
-        <Cell
-          title={cell.title}
-          formula={cell.formula}
+        <MatrixCell
           cellId={cell.id}
-          chart={cell.chartType}
           chartId={cell.chartId}
           hasChart={cell.hasChart}
+          hasSharedChart={cell.hasSharedChart}
+          canAddChart={cell.canAddChart}
           addCell={this.props.addCell}
           cellsInRow={this.props.cellsInRow}
           rowId={this.props.rowId}
-          copyCell={this.props.copyCell}
-          collectHoveredCells={this.props.collectHoveredCells}
-          copyFromHover={this.props.copyFromHover}
           clearCell={this.props.clearCell}
           addChart={this.props.addChart}
           setChartToCell={this.props.setChartToCell}
           charts={this.props.charts}
+          checkHasChart={this.props.checkHasChart}
+          setSharedChartToCell={this.props.setSharedChartToCell}
+          checkHasSharedChart={this.props.checkHasSharedChart}
+          checkNumRowsAndColumns={this.props.checkNumRowsAndColumns}
+          updateCells={this.props.updateCells}
         />
       );
     })

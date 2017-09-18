@@ -21,10 +21,14 @@
     "dragula": "^3.7.2",
     "gridstack": "^0.3.0",
     "interactjs": "^1.2.9",
+    "jquery-ui": "^1.12.1",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-dragula": "^1.1.17",
+    "react-grid-layout": "^0.15.2",
+    "react-resizable": "^1.7.4",
+    "react-resizable-component": "^1.0.16",
     "react-router-dom": "^4.2.2"
   },
   "devDependencies": {

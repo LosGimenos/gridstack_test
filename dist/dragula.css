@@ -123,6 +123,11 @@
   width: 100%;
 }
 
+/*.chart {
+  border: 1px solid black;
+  background-color: #7f5;
+}*/
+
 .button__cell--clear {
   position: absolute;
   left: 0;

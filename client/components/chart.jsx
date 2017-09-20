@@ -3,10 +3,10 @@ import { findDOMNode } from 'react-dom';
 import { Resizable, ResizableBox } from 'react-resizable';
 
 export default class Chart extends Component {
-  constructor() {
-    super();
-    this.id = 0,
-    this.chartType = 'Pie Chart'
+  constructor(props) {
+    super(props);
+    this.id = this.props.id;
+    this.chartType = this.props.chartType
   }
 
   _style() {
@@ -22,8 +22,13 @@ export default class Chart extends Component {
 
   render() {
     return (
-      <ResizableBox width={200} height={200}
-        minConstraints={[100, 100]} maxConstraints={[300, 300]}>
+      <ResizableBox
+        width={200}
+        height={200}
+        minConstraints={[100, 100]}
+        maxConstraints={[300, 300]}
+        draggableOpts={{grid: [50,50]}}
+        >
       <div
         className='chart'
         style={this._style()}

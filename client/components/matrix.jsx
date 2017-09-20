@@ -9,7 +9,8 @@ export default class Matrix extends Component {
     this.state = {
       cells: {
         '11': {
-          id: 11
+          id: 11,
+          canAddChart: true
         }
       },
       chartList: [],
@@ -27,9 +28,10 @@ export default class Matrix extends Component {
     this.addChart = this.addChart.bind(this);
     this.addColumn = this.addColumn.bind(this);
     this.addRow = this.addRow.bind(this);
+    this.setStartingDOMLocation = this.setStartingDOMLocation.bind(this);
   }
 
-  addChart(chartType) {
+  addChart(chartType, cellId) {
     let hightestId;
     const chartList = this.state.chartList;
     const charts = this.state.charts;
@@ -40,7 +42,8 @@ export default class Matrix extends Component {
     }
     charts[hightestId + 1] = {
       id: hightestId + 1,
-      chartType: chartType
+      chartType: chartType,
+      startingCell: cellId
     }
     chartList.push(hightestId + 1);
 
@@ -52,8 +55,8 @@ export default class Matrix extends Component {
     const rows = this.state.rows;
     const cells = this.state.cells;
 
-    const highestId = Math.max.apply(null, Object.keys(this.state.cells));
-    const cellId = parseInt(rowId + (highestId + 1));
+    const highestId = Math.max.apply(null, rows[rowId]['cellsInRow']);
+    const cellId = parseInt(rowId + (highestId));
     cells[cellId] ={
       id: cellId,
       canAddChart: true
@@ -92,9 +95,25 @@ export default class Matrix extends Component {
     }
     rowList.push(highestId + 1);
 
+    const p = Promise.resolve(
+      this.setState({ cells }),
+      this.setState({ rows }),
+      this.setState({ rowList }))
+      .then(() => {
+        while (this.state.rows[highestId + 1]['cellsInRow'].length < this.state.columnCount) {
+          this.addCell(highestId + 1);
+        }
+      })
+  }
+
+  setStartingDOMLocation(cellId, x, y) {
+    console.log(this.state.cells)
+    const cells = this.state.cells;
+    cells[cellId]['startingX'] = x;
+    cells[cellId]['startingY'] = y;
+
     this.setState({ cells });
-    this.setState({ rows });
-    this.setState({ rowList });
+    console.log(cells)
   }
 
   renderRows() {
@@ -107,6 +126,7 @@ export default class Matrix extends Component {
           rowId={rowData.id}
           cellsInRow={rowData.cellsInRow}
           addChart={this.addChart}
+          setStartingDOMLocation={this.setStartingDOMLocation}
         />
       );
     })
@@ -115,11 +135,16 @@ export default class Matrix extends Component {
   renderCharts() {
     return this.state.chartList.map((chartId, index) => {
       const chartInfo = this.state.charts[chartId];
+      const originCell = chartInfo['startingCell'];
+      const { startingX, startingY } = this.state.cells[originCell];
+
       return (
         <Chart
           key={index}
           id={chartInfo.id}
           chartType={chartInfo.chartType}
+          startingX={startingX}
+          startingY={startingY}
         />
       );
     })

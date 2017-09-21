@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
-// import { Resizable, ResizableBox } from 'react-resizable';
 import Rnd from 'react-rnd';
-import interact from 'interactjs';
 
 export default class Chart extends Component {
   constructor(props) {
@@ -33,8 +31,8 @@ export default class Chart extends Component {
     return (
       <Rnd
         default={{
-          x: this.props.startingX,
-          y: this.props.startingY,
+          x: this.props.startingX - 25 || 0,
+          y: this.props.startingY - 50 || 0,
           width: 100,
           height: 100
         }}

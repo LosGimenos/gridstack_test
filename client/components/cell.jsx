@@ -28,6 +28,10 @@ export default class Cell extends Component {
     this.props.addChart(chartType, this.cellId);
   }
 
+  _style() {
+    return this.state.canAddChart ? null : {backgroundColor: 'pink'}
+  }
+
   renderSelector() {
     return this.state.canAddChart &&
       <Selector
@@ -38,10 +42,13 @@ export default class Cell extends Component {
   render() {
     return (
       <div
-        className="matrix-cell">
+        className="matrix-cell"
+        name={this.cellId}
+        style={this._style()}>
         { this.renderSelector() }
         <span>Id: { this.cellId }</span>
       </div>
-    );
+
+    ) || null;
   }
 }

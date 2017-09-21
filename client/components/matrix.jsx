@@ -56,10 +56,12 @@ export default class Matrix extends Component {
     const cells = this.state.cells;
 
     const highestId = Math.max.apply(null, rows[rowId]['cellsInRow']);
-    const cellId = parseInt(rowId + (highestId));
+    const cellId = parseInt(highestId + 1);
     cells[cellId] ={
       id: cellId,
-      canAddChart: true
+      canAddChart: true,
+      startingX: null,
+      startingY: null
     }
     rows[rowId].cellsInRow.push(highestId + 1);
 
@@ -82,11 +84,13 @@ export default class Matrix extends Component {
     const rows = this.state.rows;
     const rowList = this.state.rowList;
     const cells = this.state.cells;
-    const highestId = Math.max.apply(null, Object.keys(this.state.rows));
-    const cellId = parseInt((highestId + 1) + '1' )
+    let highestId = Math.max.apply(null, Object.keys(this.state.rows));
+    let cellId = parseInt((highestId + 1) + '1' );
     cells[cellId] = {
       id: cellId,
-      canAddChart: true
+      canAddChart: true,
+      startingX: null,
+      startingY: null
     }
 
     rows[highestId + 1] = {
@@ -95,15 +99,23 @@ export default class Matrix extends Component {
     }
     rowList.push(highestId + 1);
 
-    const p = Promise.resolve(
-      this.setState({ cells }),
-      this.setState({ rows }),
-      this.setState({ rowList }))
-      .then(() => {
-        while (this.state.rows[highestId + 1]['cellsInRow'].length < this.state.columnCount) {
-          this.addCell(highestId + 1);
-        }
-      })
+    while (rows[highestId + 1]['cellsInRow'].length < this.state.columnCount) {
+      const highestCellIdInRow = Math.max.apply(null, rows[highestId + 1]['cellsInRow']);
+      const rowNewCellId = highestCellIdInRow + 1;
+
+      const newCell = cells[rowNewCellId] = {
+        id: rowNewCellId,
+        canAddChart: true,
+        startingX: null,
+        startingY: null
+      }
+
+      rows[highestId + 1]['cellsInRow'].push(rowNewCellId);
+    }
+
+    this.setState({ cells });
+    this.setState({ rows });
+    this.setState({ rowList });
   }
 
   setStartingDOMLocation(cellId, x, y) {

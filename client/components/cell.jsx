@@ -23,6 +23,10 @@ export default class Cell extends Component {
     this.props.setStartingDOMLocation(this.cellId, x, y);
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({ canAddChart: nextProps.canAddChart });
+  }
+
   setChartToCell(chartType) {
     this.setState({ canAddChart: false });
     this.props.addChart(chartType, this.cellId);

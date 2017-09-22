@@ -29,12 +29,18 @@ export default class Matrix extends Component {
     this.addColumn = this.addColumn.bind(this);
     this.addRow = this.addRow.bind(this);
     this.setStartingDOMLocation = this.setStartingDOMLocation.bind(this);
+    this._isCellOccupied = this._isCellOccupied.bind(this);
+    this._getDOMLocationOfCell = this._getDOMLocationOfCell.bind(this);
+    this._occupyCell = this._occupyCell.bind(this);
+    this._unoccupyCell = this._unoccupyCell.bind(this);
   }
 
   addChart(chartType, cellId) {
     let hightestId;
     const chartList = this.state.chartList;
     const charts = this.state.charts;
+    const cells = this.state.cells;
+
     if (chartList.length == 0 ) {
       hightestId = 0;
     } else {
@@ -46,7 +52,9 @@ export default class Matrix extends Component {
       startingCell: cellId
     }
     chartList.push(hightestId + 1);
+    cells[cellId]['canAddChart'] = false;
 
+    this.setState({ cells });
     this.setState({ charts });
     this.setState({ chartList });
   }
@@ -119,13 +127,39 @@ export default class Matrix extends Component {
   }
 
   setStartingDOMLocation(cellId, x, y) {
-    console.log(this.state.cells)
     const cells = this.state.cells;
     cells[cellId]['startingX'] = x;
     cells[cellId]['startingY'] = y;
 
     this.setState({ cells });
-    console.log(cells)
+  }
+
+  _isCellOccupied(cellId) {
+    return this.state.cells[cellId]['canAddChart'] ? false : true;
+  }
+
+  _getDOMLocationOfCell(cellId) {
+    const cell = this.state.cells[cellId];
+    const x = cell['startingX'];
+    const y = cell['startingY'];
+
+    return { x, y };
+  }
+
+  _occupyCell(cellId) {
+    const cells = this.state.cells;
+    const cell = cells[cellId];
+    cell['canAddChart'] = false;
+
+    this.setState({ cells });
+  }
+
+  _unoccupyCell(cellId) {
+    const cells = this.state.cells;
+    const cell = cells[cellId];
+    cell['canAddChart'] = true;
+
+    this.setState({ cells });
   }
 
   renderRows() {
@@ -134,11 +168,13 @@ export default class Matrix extends Component {
       const rowData = this.state.rows[row];
       return (
         <Row
+          matrixCells={this.state.cells}
           key={index}
           rowId={rowData.id}
           cellsInRow={rowData.cellsInRow}
           addChart={this.addChart}
           setStartingDOMLocation={this.setStartingDOMLocation}
+          updateMatrixCell={this._updateMatrixCell}
         />
       );
     })
@@ -155,8 +191,13 @@ export default class Matrix extends Component {
           key={index}
           id={chartInfo.id}
           chartType={chartInfo.chartType}
+          originCell={chartInfo.startingCell}
           startingX={startingX}
           startingY={startingY}
+          isOccupied={this._isCellOccupied}
+          getDOMLocationOfCell={this._getDOMLocationOfCell}
+          occupyCell={this._occupyCell}
+          unoccupyCell={this._unoccupyCell}
         />
       );
     })

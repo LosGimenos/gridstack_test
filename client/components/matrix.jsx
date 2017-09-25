@@ -33,6 +33,8 @@ export default class Matrix extends Component {
     this._getDOMLocationOfCell = this._getDOMLocationOfCell.bind(this);
     this._occupyCell = this._occupyCell.bind(this);
     this._unoccupyCell = this._unoccupyCell.bind(this);
+    this._removeChart = this._removeChart.bind(this);
+    this._getColumnAndRowCount = this._getColumnAndRowCount.bind(this);
   }
 
   addChart(chartType, cellId) {
@@ -162,6 +164,25 @@ export default class Matrix extends Component {
     this.setState({ cells });
   }
 
+  _removeChart(chartId) {
+    const charts = this.state.charts;
+    const chartList = this.state.chartList;
+    const indexOfChartId = chartList.indexOf(chartId);
+
+    delete charts[chartId];
+    const newChartList = chartList.slice(0, indexOfChartId);
+
+    this.setState({ charts });
+    this.setState({ chartList: newChartList });
+  }
+
+  _getColumnAndRowCount() {
+    return {
+      columnCount: this.state.columnCount,
+      rowCount: this.state.rowList.length
+    }
+  }
+
   renderRows() {
     const rowArray = this.state.rowList;
     return rowArray.map((row, index) => {
@@ -198,6 +219,8 @@ export default class Matrix extends Component {
           getDOMLocationOfCell={this._getDOMLocationOfCell}
           occupyCell={this._occupyCell}
           unoccupyCell={this._unoccupyCell}
+          removeChart={this._removeChart}
+          getColumnAndRowCount={this._getColumnAndRowCount}
         />
       );
     })

@@ -15,15 +15,14 @@ export default class Chart extends Component {
     this.originCell = this.props.originCell;
     this.originCells = [this.originCell];
     this.chartType = this.props.chartType;
-
-  }
-
-  componentDidMount() {
-    const thisChart = findDOMNode(this);
   }
 
   _checkForOverlap(e) {
     const chart = e.target;
+    if (chart.tagName == 'HTML') {
+      return;
+    }
+
     const chartLocation = chart.getBoundingClientRect();
     const cells = document.querySelectorAll('.matrix-cell');
     const overlappedCells = [];
@@ -107,12 +106,21 @@ export default class Chart extends Component {
       }
     })
 
-    if (!onOccupiedCell && overlappedCells.length > 1) {
+    let remainingOriginCells = this.originCells;
+    const anchorCell = Math.min.apply(null, overlappedCells);
+    if (!onOccupiedCell && overlappedCells.length >= 1) {
       this.setState({ w: this.state.w + delta.width, h: this.state.h + delta.height });
       overlappedCells.forEach((cell) => {
         this.props.occupyCell(cell);
+        remainingOriginCells = remainingOriginCells.filter((value) => {
+          return value != cell;
+        })
       })
     }
+    remainingOriginCells.forEach((cell) => {
+      this.props.unoccupyCell(cell);
+    })
+    this.originalCell = anchorCell;
   }
 
   _startDragEvent(e) {
@@ -167,6 +175,11 @@ export default class Chart extends Component {
     this.setState({ x, y });
   }
 
+  _setWidthAndHeight(width, height) {
+    const { columnCount, rowCount } = this.props.getColumnAndRowCount;
+
+  }
+
   _style() {
     return {
       postion: 'absolute',
@@ -178,6 +191,14 @@ export default class Chart extends Component {
       borderRadius: '30px',
       textAlign: 'center'
     };
+  }
+
+  _clearChart(e) {
+    this._startResizeEvent(e);
+    this.props.removeChart(this.id);
+    this.originCells.forEach((cell) => {
+      this.props.unoccupyCell(cell);
+    })
   }
 
   render() {
@@ -197,7 +218,11 @@ export default class Chart extends Component {
         <div
           style={this._style()}
           >
-          <button className="button__cell--clear">X</button>
+          <button
+            className="button__cell--clear"
+            onClick={(e) => {
+              this._clearChart(e);
+            }}>X</button>
           <span><p>Pie Style: { this.chartType }</p></span>
           <span><p>id: { this.id }</p></span>
         </div>

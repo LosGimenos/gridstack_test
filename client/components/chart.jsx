@@ -8,8 +8,8 @@ export default class Chart extends Component {
     this.state = {
       x: this.props.startingX,
       y: this.props.startingY,
-      w: 300,
-      h: 225
+      w: 110,
+      h: 80
     };
     this.id = this.props.id;
     this.originCell = this.props.originCell;
@@ -22,7 +22,7 @@ export default class Chart extends Component {
       right: x + this.state.w,
       top: y,
       bottom: y + this.state.h,
-      left: x + 10
+      left: x + 5
     }
 
     const cells = document.querySelectorAll('.matrix-cell');
@@ -139,15 +139,15 @@ export default class Chart extends Component {
   }
 
   _checkForDefaultSize() {
-    return (this.state.w == 300 && this.state.h == 225) ? true : false;
+    return (this.state.w == 110 && this.state.h == 80) ? true : false;
   }
 
   _checkAvailableMatrixSize(cellId) {
     const availableWidthIndex = this.props.findPositionInRow(cellId) + 1;
     const availableHeightIndex = this.props.findPositionInColumn(cellId) + 1;
 
-    const currentWidthIndex = parseInt((this.state.w / 300).toString().split('')[0]);
-    const currentHeightIndex = parseInt((this.state.h / 225).toString().split('')[0]);
+    const currentWidthIndex = parseInt((this.state.w / 110).toString().split('')[0]);
+    const currentHeightIndex = parseInt((this.state.h / 80).toString().split('')[0]);
 
     return (availableWidthIndex < currentWidthIndex || availableHeightIndex < currentHeightIndex) ? false : true;
   }
@@ -189,7 +189,11 @@ export default class Chart extends Component {
         this.setState({ w: this.state.w + delta.width });
       } else if (startingHeight == this.state.h) {
         console.log('same height');
-        this._setWidth(this.state.w + delta.width);
+        if (this.state.w + delta.width > startingWidth) {
+          this._setWidth(overlappedCells.length, 'bigger');
+        } else if (this.state.w + delta.width < startingWidth) {
+          this._setWidth(overlappedCells.length, 'smaller');
+        }
         this.setState({ h: this.state.h + delta.height });
       }
       overlappedCells.forEach((cell) => {
@@ -260,8 +264,26 @@ export default class Chart extends Component {
     this.setState({ x, y });
   }
 
-  _setWidth(width) {
-    let minWidthModifier = parseInt((width / 350).toString()[0]) + 1;
+  _setWidth(width, smallerOrBigger) {
+    // let minWidthModifier = parseInt((width / 70).toString()[0]);
+    let minWidthModifier = width;
+
+    switch (smallerOrBigger) {
+      case 'smaller': {
+        if (minWidthModifier == 0) {
+          minWidthModifier = 1;
+        }
+        console.log('its smaller');
+        break;
+      }
+      case 'bigger': {
+        console.log('bigger fired')
+        if (minWidthModifier == 0 || minWidthModifier == 1) {
+          minWidthModifier = 2;
+        }
+      }
+    }
+
     const paddingInWidth = 15;
     const maxWidthModifier = this.props.findPositionInRow(this.originCell);
 
@@ -271,10 +293,11 @@ export default class Chart extends Component {
       minWidthModifier = maxWidthModifier + 1;
     }
 
-    let minWidth = 300 * minWidthModifier + (paddingInWidth * minWidthModifier) - 10;
-    if (minWidth < 400 && minWidth > 300) {
-      minWidth = 300;
+    let minWidth = (131 * minWidthModifier) - paddingInWidth;
+    if (minWidth < 195 && minWidth > 110) {
+      minWidth = 110;
     }
+    console.log(minWidth, minWidthModifier, maxWidthModifier, 'the width')
     this.setState({ w: minWidth });
   }
 
@@ -321,7 +344,7 @@ export default class Chart extends Component {
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
-        position={{ x: this.state.x - 60, y: this.state.y - 40}}
+        position={{ x: this.state.x - 40, y: this.state.y - 15 }}
         onDragStart={(e, d) => { this._startDragEvent(e) }}
         onDragStop={(e, d) => { this._checkForOverlap(e) }}
         onResizeStart={(e, direction, ref, delta, position) => {

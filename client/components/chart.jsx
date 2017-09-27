@@ -265,7 +265,6 @@ export default class Chart extends Component {
   }
 
   _setWidth(width, smallerOrBigger) {
-    // let minWidthModifier = parseInt((width / 70).toString()[0]);
     let minWidthModifier = width;
 
     switch (smallerOrBigger) {

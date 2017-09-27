@@ -35,6 +35,8 @@ export default class Matrix extends Component {
     this._unoccupyCell = this._unoccupyCell.bind(this);
     this._removeChart = this._removeChart.bind(this);
     this._getColumnAndRowCount = this._getColumnAndRowCount.bind(this);
+    this._findPositionInRow = this._findPositionInRow.bind(this);
+    this._findPositionInColumn = this._findPositionInColumn.bind(this);
   }
 
   addChart(chartType, cellId) {
@@ -170,10 +172,10 @@ export default class Matrix extends Component {
     const indexOfChartId = chartList.indexOf(chartId);
 
     delete charts[chartId];
-    const newChartList = chartList.slice(0, indexOfChartId);
+    chartList.splice(indexOfChartId, 1);
 
     this.setState({ charts });
-    this.setState({ chartList: newChartList });
+    this.setState({ chartList });
   }
 
   _getColumnAndRowCount() {
@@ -181,6 +183,21 @@ export default class Matrix extends Component {
       columnCount: this.state.columnCount,
       rowCount: this.state.rowList.length
     }
+  }
+
+  _findPositionInRow(cellId) {
+    const rowPosition = cellId.toString().split('')[0];
+    const cellsInRow = this.state.rows[rowPosition]['cellsInRow'];
+    const cellPosition = cellsInRow.indexOf(cellId)
+    const lastIndexOfRow = cellsInRow.length - 1;
+    return parseInt(lastIndexOfRow) - parseInt(cellPosition);
+  }
+
+  _findPositionInColumn(cellId) {
+    const rowPosition = cellId.toString().split('')[0];
+    const cellPosition = this.state.rowList.indexOf(parseInt(rowPosition));
+    const lastIndexOfColumn = this.state.rowList.length - 1;
+    return parseInt(lastIndexOfColumn) - parseInt(cellPosition);
   }
 
   renderRows() {
@@ -209,7 +226,7 @@ export default class Matrix extends Component {
 
       return (
         <Chart
-          key={index}
+          key={chartInfo.id}
           id={chartInfo.id}
           chartType={chartInfo.chartType}
           originCell={chartInfo.startingCell}
@@ -220,7 +237,8 @@ export default class Matrix extends Component {
           occupyCell={this._occupyCell}
           unoccupyCell={this._unoccupyCell}
           removeChart={this._removeChart}
-          getColumnAndRowCount={this._getColumnAndRowCount}
+          findPositionInRow={this._findPositionInRow}
+          findPositionInColumn={this._findPositionInColumn}
         />
       );
     })

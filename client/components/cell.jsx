@@ -33,7 +33,7 @@ export default class Cell extends Component {
   }
 
   _style() {
-    return this.state.canAddChart ? null : {backgroundColor: 'pink'}
+    return this.state.canAddChart ? null : {backgroundColor: '#D2D7D3'}
   }
 
   renderSelector() {

@@ -17,13 +17,14 @@ export default class Chart extends Component {
     this.chartType = this.props.chartType;
   }
 
-  _checkForOverlap(e) {
-    const chart = e.target;
-    if (chart.tagName == 'HTML') {
-      return;
+  _checkCollision(x, y) {
+    const chartLocation = {
+      right: x + this.state.w,
+      top: y,
+      bottom: y + this.state.h,
+      left: x + 10
     }
 
-    const chartLocation = chart.getBoundingClientRect();
     const cells = document.querySelectorAll('.matrix-cell');
     const overlappedCells = [];
     let onOccupiedCell = false;
@@ -46,17 +47,64 @@ export default class Chart extends Component {
       }
     })
 
+    return { 'onOccupiedCellOnRelocate': onOccupiedCell, 'overlappedCellsOnRelocate': overlappedCells };
+  }
+
+  _checkForOverlap(e) {
+    const chart = e.target;
+    let chartLocation;
+
+    if (chart.tagName == 'HTML' || chart.tagName == 'document') {
+      return;
+    }
+
+    try {
+      chartLocation = chart.getBoundingClientRect();
+    } catch (err) {
+      return;
+    }
+
+    const cells = document.querySelectorAll('.matrix-cell');
+    const overlappedCells = [];
+    let onOccupiedCell = false;
+
+    cells.forEach((cell) => {
+      const cellLocation = cell.getBoundingClientRect();
+      const overlap = !(chartLocation.right < cellLocation.left ||
+            chartLocation.left > cellLocation.right ||
+            chartLocation.bottom < cellLocation.top ||
+            chartLocation.top > cellLocation.bottom)
+
+      if (overlap) {
+        const cellId = cell.getAttribute('name');
+        overlappedCells.push(cellId);
+        const isOccupied = this.props.isOccupied(cellId);
+
+        if (isOccupied && (this._checkIsOriginCell(cellId.toString(), this.originCells) == false)) {
+          onOccupiedCell = true;
+        }
+      }
+    })
+
+    if (!onOccupiedCell && overlappedCells.length >= 2 && this._checkForDefaultSize()) {
+      return;
+    }
+
     if (!onOccupiedCell && overlappedCells.length >= 2) {
-      console.log('greater than 2', overlappedCells)
       let remainingOriginCells = this.originCells;
       const anchorCell = Math.min.apply(null, overlappedCells);
+
+      if (!this._checkAvailableMatrixSize(anchorCell)) {
+        return;
+      }
       const { x, y } = this.props.getDOMLocationOfCell(anchorCell);
       this._resetPosition(x,y);
-      overlappedCells.forEach((cell) => {
+      const { onOccupiedCellOnRelocate, overlappedCellsOnRelocate } = this._checkCollision(x, y);
+
+      overlappedCellsOnRelocate.forEach((cell) => {
         if (!this._checkIsOriginCell(cell, this.originCells)) {
           this.props.occupyCell(cell);
         } else {
-          console.log(remainingOriginCells)
           remainingOriginCells = remainingOriginCells.filter((value) => {
             return value != cell;
           })
@@ -67,21 +115,46 @@ export default class Chart extends Component {
       })
       this.originalCell = anchorCell;
     } else if (!onOccupiedCell && overlappedCells.length <= 1) {
-      console.log('one or less')
-      const anchorCell = Math.min.apply(null, overlappedCells);
-      const { x, y } = this.props.getDOMLocationOfCell(anchorCell);
-      this._resetPosition(x,y);
-      this.props.unoccupyCell(this.originCell);
-      this.props.occupyCell(anchorCell);
-      this.originCell = anchorCell;
-      console.log('single item move', this.originCell)
-    } else {
-      console.log('nope')
+      try {
+        const anchorCell = Math.min.apply(null, overlappedCells);
+
+        if (!this._checkAvailableMatrixSize(anchorCell)) {
+          return;
+        }
+        const { x, y } = this.props.getDOMLocationOfCell(anchorCell);
+        this._resetPosition(x,y);
+        this.props.unoccupyCell(this.originCell);
+        this.props.occupyCell(anchorCell);
+        this.originCell = anchorCell;
+      } catch (err) {
+        const { x, y } = this.props.getDOMLocationOfCell(this.originCell);
+        this._resetPosition(x, y);
+        console.log(this.state.x, this.state.y)
+        return;
+      }
     }
-    console.log('drag ended', this.state.x, this.state.y, this.originCell)
+    console.log(this.originalCell, 'on finished drag')
+    const anchorCell = Math.min.apply(null, overlappedCells);
+    this.originCell = anchorCell;
+  }
+
+  _checkForDefaultSize() {
+    return (this.state.w == 300 && this.state.h == 225) ? true : false;
+  }
+
+  _checkAvailableMatrixSize(cellId) {
+    const availableWidthIndex = this.props.findPositionInRow(cellId) + 1;
+    const availableHeightIndex = this.props.findPositionInColumn(cellId) + 1;
+
+    const currentWidthIndex = parseInt((this.state.w / 300).toString().split('')[0]);
+    const currentHeightIndex = parseInt((this.state.h / 225).toString().split('')[0]);
+
+    return (availableWidthIndex < currentWidthIndex || availableHeightIndex < currentHeightIndex) ? false : true;
   }
 
   _checkResizeOverlap(e, delta) {
+    const startingWidth = this.state.w;
+    const startingHeight = this.state.h;
     const chart = e.target.parentElement.parentElement;
     const chartLocation = chart.getBoundingClientRect();
     const cells = document.querySelectorAll('.matrix-cell');
@@ -108,19 +181,29 @@ export default class Chart extends Component {
 
     let remainingOriginCells = this.originCells;
     const anchorCell = Math.min.apply(null, overlappedCells);
+
     if (!onOccupiedCell && overlappedCells.length >= 1) {
-      this.setState({ w: this.state.w + delta.width, h: this.state.h + delta.height });
+      if (startingWidth == this.state.w + delta.width) {
+        console.log('same width');
+        this._setHeight(this.state.h + delta.height);
+        this.setState({ w: this.state.w + delta.width });
+      } else if (startingHeight == this.state.h) {
+        console.log('same height');
+        this._setWidth(this.state.w + delta.width);
+        this.setState({ h: this.state.h + delta.height });
+      }
       overlappedCells.forEach((cell) => {
         this.props.occupyCell(cell);
         remainingOriginCells = remainingOriginCells.filter((value) => {
           return value != cell;
         })
       })
+      remainingOriginCells.forEach((cell) => {
+        this.props.unoccupyCell(cell);
+      })
     }
-    remainingOriginCells.forEach((cell) => {
-      this.props.unoccupyCell(cell);
-    })
     this.originalCell = anchorCell;
+    console.log(this.originCell, 'on finished resize', overlappedCells)
   }
 
   _startDragEvent(e) {
@@ -143,6 +226,7 @@ export default class Chart extends Component {
       }
     })
     this.originCells = overlappedCells;
+    console.log(this.originCells, 'this was a drag and this is the origin cell', this.originCell);
   }
 
   _startResizeEvent(e) {
@@ -165,6 +249,7 @@ export default class Chart extends Component {
       }
     })
     this.originCells = overlappedCells;
+    console.log(this.originCells, 'this was a resize and this is the origin cell', this.originCell);
   }
 
   _checkIsOriginCell(cellId, originCells) {
@@ -175,16 +260,47 @@ export default class Chart extends Component {
     this.setState({ x, y });
   }
 
-  _setWidthAndHeight(width, height) {
-    const { columnCount, rowCount } = this.props.getColumnAndRowCount;
+  _setWidth(width) {
+    let minWidthModifier = parseInt((width / 350).toString()[0]) + 1;
+    const paddingInWidth = 15;
+    const maxWidthModifier = this.props.findPositionInRow(this.originCell);
 
+    if (maxWidthModifier == 0 ) {
+      return
+    } else if (minWidthModifier > maxWidthModifier) {
+      minWidthModifier = maxWidthModifier + 1;
+    }
+
+    let minWidth = 300 * minWidthModifier + (paddingInWidth * minWidthModifier) - 10;
+    if (minWidth < 400 && minWidth > 300) {
+      minWidth = 300;
+    }
+    this.setState({ w: minWidth });
+  }
+
+  _setHeight(height) {
+    let minHeightModifier = parseInt((height / 250).toString()[0]) + 1;
+    const paddingInHeight = 40;
+    const maxHeightModifier = this.props.findPositionInColumn(this.originCell);
+
+    if (maxHeightModifier == 0 ) {
+      return
+    } else if (minHeightModifier > maxHeightModifier) {
+      minHeightModifier = maxHeightModifier + 1;
+    }
+
+    let minHeight = 225 * minHeightModifier + (paddingInHeight * minHeightModifier) - 10;
+    if (minHeight < 300 && minHeight > 225) {
+      minHeight = 225;
+    }
+    this.setState({ h: minHeight });
   }
 
   _style() {
     return {
       postion: 'absolute',
       border: '2px solid white',
-      backgroundColor: '#7f5',
+      backgroundColor: '#4C99E8',
       opacity: '.8',
       width: '100%',
       height: '100%',
@@ -217,6 +333,7 @@ export default class Chart extends Component {
       >
         <div
           style={this._style()}
+          name={this.id}
           >
           <button
             className="button__cell--clear"

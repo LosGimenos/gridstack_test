@@ -2,6 +2,7 @@ import React from 'react';
 
 const Selector = ({ setChartToCell }) => (
   <select
+    className='selector'
     defaultValue='add'
     onChange={(e) => {setChartToCell(e.target.value)}}>
     <option value='bar'>bar graph</option>

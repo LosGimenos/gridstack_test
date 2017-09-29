@@ -8,13 +8,15 @@ export default class Chart extends Component {
     this.state = {
       x: this.props.startingX,
       y: this.props.startingY,
-      w: 110,
-      h: 80
+      w: this.props.getCellRect(this.props.originCell).width * .88,
+      h: this.props.getCellRect(this.props.originCell).height
     };
     this.id = this.props.id;
     this.originCell = this.props.originCell;
     this.originCells = [this.originCell];
     this.chartType = this.props.chartType;
+    this.baseWidth = this.props.getCellRect(this.props.originCell).width;
+    this.baseHeight = this.props.getCellRect(this.props.originCell).height;
   }
 
   _checkCollision(x, y) {
@@ -307,7 +309,7 @@ export default class Chart extends Component {
       }
     }
 
-    const paddingInWidth = 15;
+    const paddingInWidth = this.baseWidth * .13;
     const maxWidthModifier = this.props.findPositionInRow(this.originCell);
 
     if (maxWidthModifier == 0 ) {
@@ -316,10 +318,8 @@ export default class Chart extends Component {
       minWidthModifier = maxWidthModifier + 1;
     }
 
-    let minWidth = (131 * minWidthModifier) - paddingInWidth;
-    if (minWidth < 195 && minWidth > 110) {
-      minWidth = 110;
-    }
+    let minWidth = (this.baseWidth * minWidthModifier) - paddingInWidth;
+
     console.log(minWidth, minWidthModifier, maxWidthModifier, 'the width')
     this.setState({ w: minWidth });
   }

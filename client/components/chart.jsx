@@ -56,7 +56,8 @@ export default class Chart extends Component {
     let chart = e.target;
     let chartLocation;
 
-    if (chart.tagName == 'HTML' || chart.tagName == 'document') {
+    console.log('check overlap for clear', chart.tagName);
+    if (chart.tagName == 'HTML' || chart.tagName == 'document' || chart.tagName == 'BUTTON') {
       return;
     }
 
@@ -91,8 +92,6 @@ export default class Chart extends Component {
         }
       }
     })
-
-    console.log('these are overlapped cells', overlappedCells);
 
     if (!onOccupiedCell && overlappedCells.length >= 2 && this._checkForDefaultSize()) {
       return;
@@ -237,11 +236,13 @@ export default class Chart extends Component {
   _startDragEvent(e) {
     this.originCells = [];
     let chart = e.target;
-    console.log(chart.className, 'start drag event element', window.scrollY, 'this is offset Y')
+    console.log(chart.className, 'start drag event element')
 
     if (chart.className == 'not-selectable') {
       chart = e.target.parentElement.parentElement.parentElement;
       console.log('this is now the chart', chart)
+    } else if (chart.className == 'button__cell--clear') {
+      chart = e.target.parentElement.parentElement;
     }
 
     const chartLocation = chart.getBoundingClientRect();
@@ -267,6 +268,7 @@ export default class Chart extends Component {
   _startResizeEvent(e) {
     this.originCells = [];
     const chart = e.target.parentElement.parentElement;
+
     const chartLocation = chart.getBoundingClientRect();
     const cells = document.querySelectorAll('.matrix-cell');
     const overlappedCells = [];
@@ -415,14 +417,12 @@ export default class Chart extends Component {
   }
 
   _clearChart(e) {
-    this._startResizeEvent(e);
+    // this._startDragEvent(e);
+    console.log('on clear these are the origin cells', this.originCells)
     this.props.removeChart(this.id);
     this.originCells.forEach((cell) => {
       this.props.unoccupyCell(cell);
     })
-
-        // position={{ x: this.state.x - 40, y: this.state.y - 12 }}
-
   }
 
   render() {
@@ -457,6 +457,7 @@ export default class Chart extends Component {
             className="button__cell--clear"
             onClick={(e) => {
               this._clearChart(e);
+              e.stopPropagation();
             }}>X</button>
           <span className="not-selectable"><p className="not-selectable">Pie Style: { this.chartType }</p></span>
           <span><p className="not-selectable">id: { this.id }</p></span>

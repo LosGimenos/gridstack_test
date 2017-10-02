@@ -457,9 +457,7 @@ export default class Chart extends Component {
             className="button__cell--clear"
             onClick={(e) => {
               this._clearChart(e);
-              e.stopPropagation();
             }}>X</button>
-          <span className="not-selectable"><p className="not-selectable">Pie Style: { this.chartType }</p></span>
           <span><p className="not-selectable">id: { this.id }</p></span>
         </div>
       </Rnd>

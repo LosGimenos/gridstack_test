@@ -429,7 +429,7 @@ export default class Chart extends Component {
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
-        position={{ x: this.state.x - (this.baseWidth * 3.25), y: this.state.y - (this.baseHeight * 1.90) }}
+        position={{ x: this.state.x - (this.baseWidth * 3.25), y: this.state.y - (this.baseHeight * 1.85) }}
         onDragStart={(e, d) => { this._startDragEvent(e) }}
         onDragStop={(e, d) => { this._checkForOverlap(e) }}
         onResizeStart={(e, direction, ref, delta, position) => {

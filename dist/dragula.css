@@ -96,11 +96,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  top: 1vh;
-  left: 3%;
+  top: 20vh;
+  left: 20%;
   border: 1px solid black;
-  width: 92.5vw;
-  height: 95vh;
+  width: 50vw;
+  height: 50vh;
   user-select: none;
 }
 
@@ -139,7 +139,6 @@
 
 .button__cell--clear {
   position: absolute;
-  left: 3%;
   top: 2%;
   border-radius: 10px;
   background-color: #E82C57;

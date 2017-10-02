@@ -158,9 +158,7 @@ export default class Matrix extends Component {
         }
       },
       rowList: [1,2,3,4],
-      columnCount: 8,
-      baseCellWidth: 0,
-      baseCellHeight: 0
+      columnCount: 8
     };
 
 

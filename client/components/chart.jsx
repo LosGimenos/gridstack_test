@@ -9,7 +9,7 @@ export default class Chart extends Component {
       x: this.props.startingX,
       y: this.props.startingY,
       w: this.props.getCellRect(this.props.originCell).width * .88,
-      h: this.props.getCellRect(this.props.originCell).height
+      h: this.props.getCellRect(this.props.originCell).height * .91
     };
     this.id = this.props.id;
     this.originCell = this.props.originCell;
@@ -147,15 +147,15 @@ export default class Chart extends Component {
   }
 
   _checkForDefaultSize() {
-    return (this.state.w == 110 && this.state.h == 80) ? true : false;
+    return (this.state.w == this.baseWidth && this.state.h == this.baseHeight) ? true : false;
   }
 
   _checkAvailableMatrixSize(cellId) {
     const availableWidthIndex = this.props.findPositionInRow(cellId) + 1;
     const availableHeightIndex = this.props.findPositionInColumn(cellId) + 1;
 
-    const currentWidthIndex = parseInt((this.state.w / 110).toString().split('')[0]);
-    const currentHeightIndex = parseInt((this.state.h / 80).toString().split('')[0]);
+    const currentWidthIndex = parseInt((this.state.w / this.baseWidth).toString().split('')[0]);
+    const currentHeightIndex = parseInt((this.state.h / this.baseHeight).toString().split('')[0]);
 
     return (availableWidthIndex < currentWidthIndex || availableHeightIndex < currentHeightIndex) ? false : true;
   }
@@ -163,7 +163,14 @@ export default class Chart extends Component {
   _checkResizeOverlap(e, delta) {
     const startingWidth = this.state.w;
     const startingHeight = this.state.h;
-    const chart = e.target.parentElement.parentElement;
+    let chart;
+
+    try {
+      chart = e.target.parentElement.parentElement;
+    } catch (err) {
+      console.log(err);
+      return;
+    }
 
     if (!chart.className.match('draggable')) {
       return;
@@ -230,7 +237,7 @@ export default class Chart extends Component {
   _startDragEvent(e) {
     this.originCells = [];
     let chart = e.target;
-    console.log(chart.className, 'start drag event element')
+    console.log(chart.className, 'start drag event element', window.scrollY, 'this is offset Y')
 
     if (chart.className == 'not-selectable') {
       chart = e.target.parentElement.parentElement.parentElement;
@@ -345,7 +352,7 @@ export default class Chart extends Component {
       }
     }
 
-    const paddingInHeight = 15;
+    const paddingInHeight = this.baseHeight * .08;
     const maxHeightModifier = this.props.findPositionInColumn(this.originCell);
 
     if (maxHeightModifier == 0 ) {
@@ -354,10 +361,8 @@ export default class Chart extends Component {
       minHeightModifier = maxHeightModifier + 1;
     }
 
-    let minHeight = (100 * minHeightModifier) - paddingInHeight;
-    if (minHeight < 175 && minHeight > 100) {
-      minHeight = 100;
-    }
+    let minHeight = (this.baseHeight * minHeightModifier) - paddingInHeight;
+
     console.log(minHeight, minHeightModifier, maxHeightModifier, 'the height')
     this.setState({ h: minHeight });
   }
@@ -415,13 +420,16 @@ export default class Chart extends Component {
     this.originCells.forEach((cell) => {
       this.props.unoccupyCell(cell);
     })
+
+        // position={{ x: this.state.x - 40, y: this.state.y - 12 }}
+
   }
 
   render() {
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
-        position={{ x: this.state.x - 40, y: this.state.y - 12 }}
+        position={{ x: this.state.x - (this.baseWidth * 3.25), y: this.state.y - (this.baseHeight * 1.90) }}
         onDragStart={(e, d) => { this._startDragEvent(e) }}
         onDragStop={(e, d) => { this._checkForOverlap(e) }}
         onResizeStart={(e, direction, ref, delta, position) => {

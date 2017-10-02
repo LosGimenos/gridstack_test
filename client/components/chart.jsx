@@ -417,7 +417,6 @@ export default class Chart extends Component {
   }
 
   _clearChart(e) {
-    // this._startDragEvent(e);
     console.log('on clear these are the origin cells', this.originCells)
     this.props.removeChart(this.id);
     this.originCells.forEach((cell) => {
@@ -429,7 +428,7 @@ export default class Chart extends Component {
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
-        position={{ x: this.state.x - (this.baseWidth * 3.25), y: this.state.y - (this.baseHeight * 1.85) }}
+        position={{ x: this.state.x - (this.baseWidth * 3.25), y: this.state.y - (this.baseHeight * 1.7) }}
         onDragStart={(e, d) => { this._startDragEvent(e) }}
         onDragStop={(e, d) => { this._checkForOverlap(e) }}
         onResizeStart={(e, direction, ref, delta, position) => {

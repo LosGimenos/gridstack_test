@@ -27,9 +27,9 @@ export default class Cell extends Component {
     this.setState({ canAddChart: nextProps.canAddChart });
   }
 
-  setChartToCell(chartType) {
+  setChartToCell() {
     this.setState({ canAddChart: false });
-    this.props.addChart(chartType, this.cellId);
+    this.props.addChart(this.cellId);
   }
 
   _style() {

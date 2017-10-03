@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import Rnd from 'react-rnd';
+import matrixSizeModifiers from '../matrixSizeModifiers.js';
 
 export default class Chart extends Component {
   constructor(props) {
@@ -9,14 +10,40 @@ export default class Chart extends Component {
       x: this.props.startingX,
       y: this.props.startingY,
       w: this.props.getCellRect(this.props.originCell).width * .88,
-      h: this.props.getCellRect(this.props.originCell).height * .91
+      h: this.props.getCellRect(this.props.originCell).height * .91,
+      columnCount: this.props.columnCount,
+      rowCount: this.props.rowCount,
     };
     this.id = this.props.id;
     this.originCell = this.props.originCell;
     this.originCells = [this.originCell];
-    this.chartType = this.props.chartType;
     this.baseWidth = this.props.getCellRect(this.props.originCell).width;
     this.baseHeight = this.props.getCellRect(this.props.originCell).height;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.rowCount != this.state.rowCount || nextProps.columnCount != this.state.columnCount) {
+      const { width, height, top, left } = this.props.getCellRect(this.originCell);
+      const chartWidthDifference = this.state.w * this._getCellSizeDifference(this.baseWidth, width);
+      const chartHeightDifference = this.state.h * this._getCellSizeDifference(this.baseHeight, height);
+      const chartWidth = this.state.w - chartWidthDifference;
+      const chartHeight = this.state.h - chartHeightDifference;
+
+      this.setState({ rowCount: nextProps.rowCount });
+      this.setState({ columnCount: nextProps.columnCount });
+      this.setState({ w:  chartWidth });
+      this.setState({ h:  chartHeight });
+      this.setState({ x: left });
+      this.setState({ y: top });
+
+      this.baseWidth = width;
+      this.baseHeight = height;
+    }
+  }
+
+  _getCellSizeDifference(baseCellSize, newCellSize) {
+    const cellSizeDifference = ((baseCellSize - newCellSize) / baseCellSize);
+    return cellSizeDifference;
   }
 
   _checkCollision(x, y) {
@@ -428,7 +455,7 @@ export default class Chart extends Component {
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
-        position={{ x: this.state.x - (this.baseWidth * 3.25), y: this.state.y - (this.baseHeight * 1.7) }}
+        position={{ x: this.state.x - (this.baseWidth * matrixSizeModifiers['columns'][this.state.columnCount]), y: this.state.y - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount]) }}
         onDragStart={(e, d) => { this._startDragEvent(e) }}
         onDragStop={(e, d) => { this._checkForOverlap(e) }}
         onResizeStart={(e, direction, ref, delta, position) => {

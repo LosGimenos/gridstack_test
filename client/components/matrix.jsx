@@ -24,22 +24,6 @@ export default class Matrix extends Component {
           id: 14,
           canAddChart: true
         },
-        '15': {
-          id: 15,
-          canAddChart: true
-        },
-        '16': {
-          id: 16,
-          canAddChart: true
-        },
-        '17': {
-          id: 17,
-          canAddChart: true
-        },
-        '18': {
-          id: 18,
-          canAddChart: true
-        },
         '21': {
           id: 21,
           canAddChart: true
@@ -55,112 +39,25 @@ export default class Matrix extends Component {
         '24': {
           id: 24,
           canAddChart: true
-        },
-        '25': {
-          id: 25,
-          canAddChart: true
-        },
-        '26': {
-          id: 26,
-          canAddChart: true
-        },
-        '27': {
-          id: 27,
-          canAddChart: true
-        },
-        '28': {
-          id: 28,
-          canAddChart: true
-        },
-        '31': {
-          id: 31,
-          canAddChart: true
-        },
-        '32': {
-          id: 32,
-          canAddChart: true
-        },
-        '33': {
-          id: 33,
-          canAddChart: true
-        },
-        '34': {
-          id: 34,
-          canAddChart: true
-        },
-        '35': {
-          id: 35,
-          canAddChart: true
-        },
-        '36': {
-          id: 36,
-          canAddChart: true
-        },
-        '37': {
-          id: 37,
-          canAddChart: true
-        },
-        '38': {
-          id: 38,
-          canAddChart: true
-        },
-        '41': {
-          id: 41,
-          canAddChart: true
-        },
-        '42': {
-          id: 42,
-          canAddChart: true
-        },
-        '43': {
-          id: 43,
-          canAddChart: true
-        },
-        '44': {
-          id: 44,
-          canAddChart: true
-        },
-        '45': {
-          id: 45,
-          canAddChart: true
-        },
-        '46': {
-          id: 46,
-          canAddChart: true
-        },
-        '47': {
-          id: 47,
-          canAddChart: true
-        },
-        '48': {
-          id: 48,
-          canAddChart: true
-        },
+        }
       },
       chartList: [],
       charts: {},
       rows: {
         '1': {
           id: 1,
-          cellsInRow: [11,12,13,14,15,16,17,18]
+          cellsInRow: [11,12,13,14]
         },
         '2': {
           id: 2,
-          cellsInRow: [21,22,23,24,25,26,27,28]
-        },
-        '3': {
-          id: 3,
-          cellsInRow: [31,32,33,34,35,36,37,38]
-        },
-        '4': {
-          id: 4,
-          cellsInRow: [41,42,43,44,45,46,47,48]
+          cellsInRow: [21,22,23,24]
         }
       },
-      rowList: [1,2,3,4],
-      columnCount: 8
+      rowList: [1,2],
+      columnCount: 4
     };
-
+    this.columnLimit = 8;
+    this.rowLimit = 6;
 
     this.addChart = this.addChart.bind(this);
     this.addColumn = this.addColumn.bind(this);
@@ -177,7 +74,22 @@ export default class Matrix extends Component {
     this._getCellRect = this._getCellRect.bind(this);
   }
 
-  addChart(chartType, cellId) {
+  updateCellLocations() {
+    const cells = this.state.cells;
+    const matrixCells = document.querySelectorAll('.matrix-cell');
+
+    matrixCells.forEach((cell) => {
+      const cellId = cell.getAttribute('name');
+      const cellLocation = cell.getBoundingClientRect();
+      cells[cellId]['startingX'] = cellLocation.left;
+      cells[cellId]['startingY'] = cellLocation.top;
+    })
+
+    this.setState({ cells });
+    console.log(this.state.cells);
+  }
+
+  addChart(cellId) {
     let hightestId;
     const chartList = this.state.chartList;
     const charts = this.state.charts;
@@ -190,7 +102,6 @@ export default class Matrix extends Component {
     }
     charts[hightestId + 1] = {
       id: hightestId + 1,
-      chartType: chartType,
       startingCell: cellId
     }
     chartList.push(hightestId + 1);
@@ -220,52 +131,60 @@ export default class Matrix extends Component {
   }
 
   addColumn() {
-    this.state.rowList.forEach((row) => {
-      while (this.state.rows[row]['cellsInRow'].length < this.state.columnCount + 1) {
-        this.addCell(row);
-      }
-    });
-    this.setState((prevState, props) => {
-      return {columnCount: prevState.columnCount + 1};
-    });
+    if (this.state.columnCount + 1 <= this.columnLimit) {
+      this.state.rowList.forEach((row) => {
+        while (this.state.rows[row]['cellsInRow'].length < this.state.columnCount + 1) {
+          this.addCell(row);
+        }
+      });
+      this.setState((prevState, props) => {
+        return {columnCount: prevState.columnCount + 1};
+      });
+    }
+
+    this.updateCellLocations();
   }
 
   addRow() {
-    const rows = this.state.rows;
-    const rowList = this.state.rowList;
-    const cells = this.state.cells;
-    let highestId = Math.max.apply(null, Object.keys(this.state.rows));
-    let cellId = parseInt((highestId + 1) + '1' );
-    cells[cellId] = {
-      id: cellId,
-      canAddChart: true,
-      startingX: null,
-      startingY: null
-    }
-
-    rows[highestId + 1] = {
-      id: highestId + 1,
-      cellsInRow: [cellId]
-    }
-    rowList.push(highestId + 1);
-
-    while (rows[highestId + 1]['cellsInRow'].length < this.state.columnCount) {
-      const highestCellIdInRow = Math.max.apply(null, rows[highestId + 1]['cellsInRow']);
-      const rowNewCellId = highestCellIdInRow + 1;
-
-      const newCell = cells[rowNewCellId] = {
-        id: rowNewCellId,
+    if (this.state.rowList.length + 1 <= this.rowLimit) {
+      const rows = this.state.rows;
+      const rowList = this.state.rowList;
+      const cells = this.state.cells;
+      let highestId = Math.max.apply(null, Object.keys(this.state.rows));
+      let cellId = parseInt((highestId + 1) + '1' );
+      cells[cellId] = {
+        id: cellId,
         canAddChart: true,
         startingX: null,
         startingY: null
       }
 
-      rows[highestId + 1]['cellsInRow'].push(rowNewCellId);
+      rows[highestId + 1] = {
+        id: highestId + 1,
+        cellsInRow: [cellId]
+      }
+      rowList.push(highestId + 1);
+
+      while (rows[highestId + 1]['cellsInRow'].length < this.state.columnCount) {
+        const highestCellIdInRow = Math.max.apply(null, rows[highestId + 1]['cellsInRow']);
+        const rowNewCellId = highestCellIdInRow + 1;
+
+        const newCell = cells[rowNewCellId] = {
+          id: rowNewCellId,
+          canAddChart: true,
+          startingX: null,
+          startingY: null
+        }
+
+        rows[highestId + 1]['cellsInRow'].push(rowNewCellId);
+      }
+
+      this.setState({ cells });
+      this.setState({ rows });
+      this.setState({ rowList });
     }
 
-    this.setState({ cells });
-    this.setState({ rows });
-    this.setState({ rowList });
+    this.updateCellLocations();
   }
 
   setStartingDOMLocation(cellId, x, y) {
@@ -281,9 +200,11 @@ export default class Matrix extends Component {
   }
 
   _getDOMLocationOfCell(cellId) {
-    const cell = this.state.cells[cellId];
-    const x = cell['startingX'];
-    const y = cell['startingY'];
+    const el = document.getElementsByName(cellId)[0];
+    const elRect = el.getBoundingClientRect();
+    const { top, left } = elRect;
+    const x = left;
+    const y = top;
 
     return { x, y };
   }
@@ -367,7 +288,9 @@ export default class Matrix extends Component {
     return this.state.chartList.map((chartId, index) => {
       const chartInfo = this.state.charts[chartId];
       const originCell = chartInfo['startingCell'];
-      const { startingX, startingY } = this.state.cells[originCell];
+      const el = document.getElementsByName(originCell)[0];
+      const elRect = el.getBoundingClientRect();
+      const { top, left } = elRect;
 
       return (
         <Chart
@@ -375,8 +298,8 @@ export default class Matrix extends Component {
           id={chartInfo.id}
           chartType={chartInfo.chartType}
           originCell={chartInfo.startingCell}
-          startingX={startingX}
-          startingY={startingY}
+          startingX={left}
+          startingY={top}
           getCellRect={this._getCellRect}
           isOccupied={this._isCellOccupied}
           getDOMLocationOfCell={this._getDOMLocationOfCell}
@@ -385,6 +308,8 @@ export default class Matrix extends Component {
           removeChart={this._removeChart}
           findPositionInRow={this._findPositionInRow}
           findPositionInColumn={this._findPositionInColumn}
+          rowCount={this.state.rowList.length}
+          columnCount={this.state.columnCount}
         />
       );
     })

@@ -24,9 +24,7 @@ export default class Chart extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.columnCount != this.state.columnCount) {
-      console.log('receive props from columns. base width', this.baseWidth, this.baseHeight)
       const { width, height, top, left } = this.props.getCellRect(this.originCell);
-      console.log('this is width', width)
       const chartWidthDifference = this.state.w * this._getCellSizeDifference(this.baseWidth, width);
       const chartHeightDifference = this.state.h * this._getCellSizeDifference(this.baseHeight, height);
       const chartWidth = this.state.w - chartWidthDifference;
@@ -48,7 +46,6 @@ export default class Chart extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log('component did update', prevProps)
     if (prevProps.rowCount != this.state.rowCount && !this.heightCorrected) {
       console.log('receive props from rows. Heres the base height', this.baseHeight);
       let { width, height, top, left } = this.props.getCellRect(this.originCell);
@@ -68,8 +65,9 @@ export default class Chart extends Component {
 
       this.baseWidth = width;
       this.baseHeight = height;
+      console.log('an acutal update occured')
     }
-    console.log('did update all done')
+    console.log('pass with no update')
   }
 
   _getCellSizeDifference(baseCellSize, newCellSize) {
@@ -483,6 +481,7 @@ export default class Chart extends Component {
   }
 
   render() {
+    {console.log(this.id, matrixSizeModifiers['rows'][this.state.rowCount], this.state.rowCount, 'checking out the width and height')}
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}

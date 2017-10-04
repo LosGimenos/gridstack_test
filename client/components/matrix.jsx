@@ -59,6 +59,7 @@ export default class Matrix extends Component {
     };
     this.columnLimit = 8;
     this.rowLimit = 6;
+    this.counter = 0;
 
     this.addChart = this.addChart.bind(this);
     this.addColumn = this.addColumn.bind(this);
@@ -91,6 +92,7 @@ export default class Matrix extends Component {
   }
 
   addChart(cellId) {
+    console.log(cellId)
     let hightestId;
     const chartList = this.state.chartList;
     const charts = this.state.charts;
@@ -183,10 +185,9 @@ export default class Matrix extends Component {
       this.setState({ cells });
       this.setState({ rows });
       this.setState({ rowList });
-      // this.setState({ rowCount: this.state.rowCount + 1 });
+      this.setState({ rowCount: this.state.rowCount + 1 });
     }
 
-    this.addToRowCount();
     this.updateCellLocations();
   }
 
@@ -297,6 +298,8 @@ export default class Matrix extends Component {
       const chartInfo = this.state.charts[chartId];
       const originCell = chartInfo['startingCell'];
       const { x, y } = this._getDOMLocationOfCell(originCell);
+      console.log(originCell);
+      console.log(x, y)
 
       return (
         <Chart

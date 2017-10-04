@@ -59,7 +59,6 @@ export default class Matrix extends Component {
     };
     this.columnLimit = 8;
     this.rowLimit = 6;
-    this.counter = 0;
 
     this.addChart = this.addChart.bind(this);
     this.addColumn = this.addColumn.bind(this);
@@ -88,11 +87,9 @@ export default class Matrix extends Component {
     })
 
     this.setState({ cells });
-    console.log(this.state.cells);
   }
 
-  addChart(cellId) {
-    console.log(cellId)
+  addChart(cellId, row=1, column=1) {
     let hightestId;
     const chartList = this.state.chartList;
     const charts = this.state.charts;
@@ -105,7 +102,9 @@ export default class Matrix extends Component {
     }
     charts[hightestId + 1] = {
       id: hightestId + 1,
-      startingCell: cellId
+      startingCell: cellId,
+      startingRowSpan: row,
+      startingColumnSpan: column
     }
     chartList.push(hightestId + 1);
     cells[cellId]['canAddChart'] = false;
@@ -144,7 +143,6 @@ export default class Matrix extends Component {
         return {columnCount: prevState.columnCount + 1};
       });
     }
-
     this.updateCellLocations();
   }
 
@@ -298,8 +296,6 @@ export default class Matrix extends Component {
       const chartInfo = this.state.charts[chartId];
       const originCell = chartInfo['startingCell'];
       const { x, y } = this._getDOMLocationOfCell(originCell);
-      console.log(originCell);
-      console.log(x, y)
 
       return (
         <Chart
@@ -308,6 +304,8 @@ export default class Matrix extends Component {
           originCell={chartInfo.startingCell}
           startingX={x}
           startingY={y}
+          startingColumnSpan={chartInfo.startingColumnSpan}
+          startingRowSpan={chartInfo.startingRowSpan}
           getCellRect={this._getCellRect}
           isOccupied={this._isCellOccupied}
           getDOMLocationOfCell={this._getDOMLocationOfCell}
@@ -318,6 +316,7 @@ export default class Matrix extends Component {
           findPositionInColumn={this._findPositionInColumn}
           rowCount={this.state.rowCount}
           columnCount={this.state.columnCount}
+          addChart={this.addChart}
         />
       );
     })

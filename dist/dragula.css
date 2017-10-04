@@ -145,7 +145,7 @@
 .button__addRow {
   position: absolute;
   cursor: pointer;
-  bottom: -5%;
+  bottom: -6%;
   width: 100%;
   background-color: pink;
 }
@@ -188,6 +188,10 @@
   height: 35%;
   width: 70%;
   font-size: .5em;
+}
+
+.button__cell--clone {
+  background-color: #2ecc71;
 }
 
 .test {

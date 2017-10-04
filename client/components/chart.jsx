@@ -9,8 +9,8 @@ export default class Chart extends Component {
     this.state = {
       x: this.props.startingX,
       y: this.props.startingY,
-      w: this.props.getCellRect(this.props.originCell).width * .88,
-      h: this.props.getCellRect(this.props.originCell).height * .91,
+      w: (this.props.getCellRect(this.props.originCell).width * this.props.startingColumnSpan) * .88,
+      h: (this.props.getCellRect(this.props.originCell).height * this.props.startingRowSpan) * .91,
       columnCount: this.props.columnCount,
       rowCount: this.props.rowCount,
     };
@@ -41,18 +41,15 @@ export default class Chart extends Component {
     } else if (nextProps.rowCount != this.state.rowCount) {
       this.setState({ rowCount: nextProps.rowCount });
       this.heightCorrected = false;
-      console.log('set state row')
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.rowCount != this.state.rowCount && !this.heightCorrected) {
-      console.log('receive props from rows. Heres the base height', this.baseHeight);
       let { width, height, top, left } = this.props.getCellRect(this.originCell);
 
       const chartWidthDifference = this.state.w * this._getCellSizeDifference(this.baseWidth, width);
       const chartHeightDifference = this.state.h * this._getCellSizeDifference(this.baseHeight, height);
-      console.log('height stuff', this.baseHeight, height, chartHeightDifference)
 
       const chartWidth = this.state.w - chartWidthDifference;
       const chartHeight = this.state.h - chartHeightDifference;
@@ -65,9 +62,7 @@ export default class Chart extends Component {
 
       this.baseWidth = width;
       this.baseHeight = height;
-      console.log('an acutal update occured')
     }
-    console.log('pass with no update')
   }
 
   _getCellSizeDifference(baseCellSize, newCellSize) {
@@ -297,7 +292,7 @@ export default class Chart extends Component {
     if (chart.className == 'not-selectable') {
       chart = e.target.parentElement.parentElement.parentElement;
       console.log('this is now the chart', chart)
-    } else if (chart.className == 'button__cell--clear') {
+    } else if (chart.className == 'button__cell--clear' || chart.className == 'button__cell--clone') {
       chart = e.target.parentElement.parentElement;
     }
 
@@ -459,6 +454,39 @@ export default class Chart extends Component {
     return columnsAndRows;
   }
 
+  _cloneChart(e) {
+    const clonedChartLocation = [];
+    const { columns, rows } = this._checkPositionInRowAndColumn(this.originCells);
+    let onOccupiedCell = false;
+    let noCellExists = false;
+
+    this.originCells.forEach((cell) => {
+      const potentialCell = parseInt(cell) + columns;
+      clonedChartLocation.push(potentialCell);
+      let isOccupied;
+      try {
+        isOccupied = this.props.isOccupied(potentialCell);
+      } catch (err) {
+        noCellExists = true;
+      }
+
+      if (isOccupied) {
+        onOccupiedCell = true;
+      }
+    })
+    // this.props.addChart()
+
+    if (onOccupiedCell || noCellExists) {
+      return;
+    } else {
+      const anchorCell = Math.min.apply(0, clonedChartLocation);
+      this.props.addChart(anchorCell, rows, columns);
+    }
+    console.log(onOccupiedCell, noCellExists)
+
+    console.log(clonedChartLocation)
+  }
+
   _style() {
     return {
       postion: 'absolute',
@@ -481,7 +509,6 @@ export default class Chart extends Component {
   }
 
   render() {
-    {console.log(this.id, matrixSizeModifiers['rows'][this.state.rowCount], this.state.rowCount, 'checking out the width and height')}
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
@@ -514,6 +541,13 @@ export default class Chart extends Component {
             onClick={(e) => {
               this._clearChart(e);
             }}>X</button>
+          <button
+            className='button__cell--clone'
+            onClick={(e) => {
+              this._cloneChart(e);
+            }}
+          >Copy
+          </button>
           <span><p className="not-selectable">id: { this.id }</p></span>
         </div>
       </Rnd>

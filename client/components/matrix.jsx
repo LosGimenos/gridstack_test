@@ -54,7 +54,8 @@ export default class Matrix extends Component {
         }
       },
       rowList: [1,2],
-      columnCount: 4
+      columnCount: 4,
+      rowCount: 2
     };
     this.columnLimit = 8;
     this.rowLimit = 6;
@@ -182,9 +183,16 @@ export default class Matrix extends Component {
       this.setState({ cells });
       this.setState({ rows });
       this.setState({ rowList });
+      // this.setState({ rowCount: this.state.rowCount + 1 });
     }
 
+    this.addToRowCount();
     this.updateCellLocations();
+  }
+
+  addToRowCount() {
+    this.setState({ rowCount: this.state.rowCount + 1 });
+    console.log('add to row')
   }
 
   setStartingDOMLocation(cellId, x, y) {
@@ -288,18 +296,15 @@ export default class Matrix extends Component {
     return this.state.chartList.map((chartId, index) => {
       const chartInfo = this.state.charts[chartId];
       const originCell = chartInfo['startingCell'];
-      const el = document.getElementsByName(originCell)[0];
-      const elRect = el.getBoundingClientRect();
-      const { top, left } = elRect;
+      const { x, y } = this._getDOMLocationOfCell(originCell);
 
       return (
         <Chart
           key={chartInfo.id}
           id={chartInfo.id}
-          chartType={chartInfo.chartType}
           originCell={chartInfo.startingCell}
-          startingX={left}
-          startingY={top}
+          startingX={x}
+          startingY={y}
           getCellRect={this._getCellRect}
           isOccupied={this._isCellOccupied}
           getDOMLocationOfCell={this._getDOMLocationOfCell}
@@ -308,7 +313,7 @@ export default class Matrix extends Component {
           removeChart={this._removeChart}
           findPositionInRow={this._findPositionInRow}
           findPositionInColumn={this._findPositionInColumn}
-          rowCount={this.state.rowList.length}
+          rowCount={this.state.rowCount}
           columnCount={this.state.columnCount}
         />
       );

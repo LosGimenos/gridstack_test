@@ -19,17 +19,19 @@ export default class Chart extends Component {
     this.originCells = [this.originCell];
     this.baseWidth = this.props.getCellRect(this.props.originCell).width;
     this.baseHeight = this.props.getCellRect(this.props.originCell).height;
+    this.heightCorrected = true;
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.rowCount != this.state.rowCount || nextProps.columnCount != this.state.columnCount) {
+    if (nextProps.columnCount != this.state.columnCount) {
+      console.log('receive props from columns. base width', this.baseWidth, this.baseHeight)
       const { width, height, top, left } = this.props.getCellRect(this.originCell);
+      console.log('this is width', width)
       const chartWidthDifference = this.state.w * this._getCellSizeDifference(this.baseWidth, width);
       const chartHeightDifference = this.state.h * this._getCellSizeDifference(this.baseHeight, height);
       const chartWidth = this.state.w - chartWidthDifference;
       const chartHeight = this.state.h - chartHeightDifference;
 
-      this.setState({ rowCount: nextProps.rowCount });
       this.setState({ columnCount: nextProps.columnCount });
       this.setState({ w:  chartWidth });
       this.setState({ h:  chartHeight });
@@ -38,7 +40,36 @@ export default class Chart extends Component {
 
       this.baseWidth = width;
       this.baseHeight = height;
+    } else if (nextProps.rowCount != this.state.rowCount) {
+      this.setState({ rowCount: nextProps.rowCount });
+      this.heightCorrected = false;
+      console.log('set state row')
     }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log('component did update', prevProps)
+    if (prevProps.rowCount != this.state.rowCount && !this.heightCorrected) {
+      console.log('receive props from rows. Heres the base height', this.baseHeight);
+      let { width, height, top, left } = this.props.getCellRect(this.originCell);
+
+      const chartWidthDifference = this.state.w * this._getCellSizeDifference(this.baseWidth, width);
+      const chartHeightDifference = this.state.h * this._getCellSizeDifference(this.baseHeight, height);
+      console.log('height stuff', this.baseHeight, height, chartHeightDifference)
+
+      const chartWidth = this.state.w - chartWidthDifference;
+      const chartHeight = this.state.h - chartHeightDifference;
+
+      this.setState({ x: left });
+      this.setState({ y: top });
+      this.setState({ w: chartWidth });
+      this.setState({ h: chartHeight });
+      this.heightCorrected = true;
+
+      this.baseWidth = width;
+      this.baseHeight = height;
+    }
+    console.log('did update all done')
   }
 
   _getCellSizeDifference(baseCellSize, newCellSize) {

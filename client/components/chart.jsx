@@ -474,13 +474,15 @@ export default class Chart extends Component {
         onOccupiedCell = true;
       }
     })
-    // this.props.addChart()
 
     if (onOccupiedCell || noCellExists) {
       return;
     } else {
       const anchorCell = Math.min.apply(0, clonedChartLocation);
       this.props.addChart(anchorCell, rows, columns);
+      clonedChartLocation.forEach((cell) => {
+        this.props.occupyCell(cell);
+      })
     }
     console.log(onOccupiedCell, noCellExists)
 
@@ -541,13 +543,15 @@ export default class Chart extends Component {
             onClick={(e) => {
               this._clearChart(e);
             }}>X</button>
-          <button
-            className='button__cell--clone'
-            onClick={(e) => {
-              this._cloneChart(e);
-            }}
-          >Copy
-          </button>
+            {
+          // <button
+          //   className='button__cell--clone'
+          //   onClick={(e) => {
+          //     this._cloneChart(e);
+          //   }}
+          // >Copy
+          // </button>
+            }
           <span><p className="not-selectable">id: { this.id }</p></span>
         </div>
       </Rnd>

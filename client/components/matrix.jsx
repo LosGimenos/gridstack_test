@@ -296,6 +296,17 @@ export default class Matrix extends Component {
       const chartInfo = this.state.charts[chartId];
       const originCell = chartInfo['startingCell'];
       const { x, y } = this._getDOMLocationOfCell(originCell);
+      let startingColumnSpan = 1;
+      let startingRowSpan = 1;
+
+      if (chartInfo.startingColumnSpan != 1) {
+        startingColumnSpan = chartInfo.startingColumnSpan * 1.0872;
+        console.log(startingColumnSpan)
+      }
+      if (chartInfo.startingRowSpan != 1) {
+        startingRowSpan = chartInfo.startingRowSpan * 1.085;
+      }
+
 
       return (
         <Chart
@@ -304,8 +315,8 @@ export default class Matrix extends Component {
           originCell={chartInfo.startingCell}
           startingX={x}
           startingY={y}
-          startingColumnSpan={chartInfo.startingColumnSpan}
-          startingRowSpan={chartInfo.startingRowSpan}
+          startingColumnSpan={startingColumnSpan}
+          startingRowSpan={startingRowSpan}
           getCellRect={this._getCellRect}
           isOccupied={this._isCellOccupied}
           getDOMLocationOfCell={this._getDOMLocationOfCell}

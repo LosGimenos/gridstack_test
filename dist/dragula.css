@@ -99,8 +99,8 @@
   top: 20vh;
   left: 20%;
   border: 1px solid black;
-  width: 50vw;
-  height: 50vh;
+  width: 722px;
+  height: 403.5px;
   user-select: none;
 }
 
@@ -188,6 +188,7 @@
   height: 35%;
   width: 70%;
   font-size: .5em;
+  border-radius: 5px;
 }
 
 .button__cell--clone {

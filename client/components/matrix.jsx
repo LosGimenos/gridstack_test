@@ -250,21 +250,25 @@ export default class Matrix extends Component {
     let chartToDelete = charts[chartId];
     console.log(chartId, 'chart id that came in')
 
-    if (chartToDelete == chartId) {
-      console.log('remove all was ok')
-      delete charts[chartId];
-      indexOfChartId = chartList.indexOf(chartId);
-      chartList.splice(indexOfChartId, 1);
-    } else {
-      console.log('weird stuff')
-      const adjustedChartId = charts[chartId]['id'];
-      console.log(adjustedChartId, 'adjusted chart id')
-      delete charts[adjustedChartId];
-      indexOfChartId = chartList.indexOf(adjustedChartId);
-      chartList.splice(indexOfChartId, 1);
-      console.log(charts, chartList)
-    }
+    delete charts[chartId];
+    indexOfChartId = chartList.indexOf(chartId);
+    chartList.splice(indexOfChartId, 1);
 
+    // if (chartToDelete == chartId) {
+    //   console.log('remove all was ok')
+    //   delete charts[chartId];
+    //   indexOfChartId = chartList.indexOf(chartId);
+    //   chartList.splice(indexOfChartId, 1);
+    // } else {
+    //   console.log('weird stuff')
+    //   const adjustedChartId = charts[chartId]['id'];
+    //   console.log(adjustedChartId, 'adjusted chart id')
+    //   delete charts[adjustedChartId];
+    //   indexOfChartId = chartList.indexOf(adjustedChartId);
+    //   chartList.splice(indexOfChartId, 1);
+    //   console.log(charts, chartList)
+    // }
+    console.log(charts, 'charts look like this')
     this.setState({ charts });
     this.setState({ chartList });
   }
@@ -302,6 +306,8 @@ export default class Matrix extends Component {
     const charts = this.state.charts;
     charts[olderChartId]['id'] = newerChartId;
     charts[newerChartId]['id'] = olderChartId;
+
+    charts[olderChartId]['clonedFrom'] = olderChartId;
 
     this.setState({ charts });
   }
@@ -343,7 +349,7 @@ export default class Matrix extends Component {
 
       return (
         <Chart
-          key={chartId}
+          key={parseInt(''+chartId+x+y)}
           id={chartInfo.id}
           originCell={chartInfo.startingCell}
           startingX={x}
@@ -351,6 +357,7 @@ export default class Matrix extends Component {
           startingColumnSpan={startingColumnSpan}
           startingRowSpan={startingRowSpan}
           clonedTo={chartInfo.clonedTo}
+          clonedFrom={chartInfo.clonedFrom}
           getCellRect={this._getCellRect}
           isOccupied={this._isCellOccupied}
           getDOMLocationOfCell={this._getDOMLocationOfCell}
@@ -369,6 +376,7 @@ export default class Matrix extends Component {
   }
 
   render() {
+    {console.log(this.state.charts)}
     return (
       <div className='matrix'>
         <ActionButton

@@ -21,6 +21,7 @@ export default class Chart extends Component {
     this.baseHeight = this.props.getCellRect(this.props.originCell).height;
     this.heightCorrected = true;
     this.clonedTo = null || this.props.clonedTo
+    this.clonedFrom = null || this.props.clonedFrom
   }
 
   componentWillReceiveProps(nextProps) {
@@ -46,6 +47,12 @@ export default class Chart extends Component {
 
     if (nextProps.id != this.id) {
       this.id = nextProps.id;
+    }
+    if (nextProps.clonedTo != this.props.clonedTo) {
+      this.clonedTo = nextProps.clonedTo;
+    }
+    if (nextProps.clonedFrom != this.props.clonedFrom) {
+      this.clonedFrom = nextProps.clonedFrom;
     }
   }
 
@@ -528,7 +535,12 @@ export default class Chart extends Component {
     let chartIdToRemove = this.id;
     if (this.clonedTo) {
       chartIdToRemove = this.clonedTo;
+      console.log('ran TO')
+    } else if (this.clonedFrom) {
+      chartIdToRemove = this.clonedFrom;
+      console.log('from')
     }
+    console.log(chartIdToRemove, 'chart id to remove')
     this.props.removeChart(chartIdToRemove);
     this.originCells.forEach((cell) => {
       this.props.unoccupyCell(cell);

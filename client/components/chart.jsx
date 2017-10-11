@@ -285,6 +285,8 @@ export default class Chart extends Component {
   }
 
   _startDragEvent(e) {
+    console.log('checking shift', e.shiftKey)
+
     this.originCells = [];
     let chart = e.target;
     console.log(chart.className, 'start drag event element')
@@ -489,6 +491,10 @@ export default class Chart extends Component {
     console.log(clonedChartLocation)
   }
 
+  _copyChart(e) {
+    console.log('Went to copy chart')
+  }
+
   _style() {
     return {
       postion: 'absolute',
@@ -515,7 +521,7 @@ export default class Chart extends Component {
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
         position={{ x: this.state.x - (this.baseWidth * matrixSizeModifiers['columns'][this.state.columnCount]), y: this.state.y - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount]) }}
-        onDragStart={(e, d) => { this._startDragEvent(e) }}
+        onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
         onDragStop={(e, d) => { this._checkForOverlap(e) }}
         onResizeStart={(e, direction, ref, delta, position) => {
           this._startResizeEvent(e);

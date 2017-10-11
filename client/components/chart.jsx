@@ -42,6 +42,10 @@ export default class Chart extends Component {
       this.setState({ rowCount: nextProps.rowCount });
       this.heightCorrected = false;
     }
+
+    if (nextProps.id != this.id) {
+      this.id = nextProps.id;
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -492,7 +496,13 @@ export default class Chart extends Component {
   }
 
   _copyChart(e) {
-    console.log('Went to copy chart')
+    console.log('Went to copy chart');
+    this._startDragEvent(e);
+
+    const { columns, rows } = this._checkPositionInRowAndColumn(this.originCells);
+    const { chartId } = this.props.addChart(this.originCell, rows, columns);
+    this.props.swapChartId(chartId, this.id);
+    this.id = this.props.id;
   }
 
   _style() {

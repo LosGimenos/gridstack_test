@@ -73,6 +73,7 @@ export default class Matrix extends Component {
     this._findPositionInRow = this._findPositionInRow.bind(this);
     this._findPositionInColumn = this._findPositionInColumn.bind(this);
     this._getCellRect = this._getCellRect.bind(this);
+    this._swapChartId = this._swapChartId.bind(this);
   }
 
   updateCellLocations() {
@@ -90,28 +91,32 @@ export default class Matrix extends Component {
   }
 
   addChart(cellId, row=1, column=1) {
-    let hightestId;
+    let highestId;
     const chartList = this.state.chartList;
     const charts = this.state.charts;
     const cells = this.state.cells;
 
     if (chartList.length == 0 ) {
-      hightestId = 0;
+      highestId = 0;
     } else {
-        hightestId = Math.max.apply(null, Object.keys(this.state.charts));
+        highestId = Math.max.apply(null, Object.keys(this.state.charts));
     }
-    charts[hightestId + 1] = {
-      id: hightestId + 1,
+    charts[highestId + 1] = {
+      id: highestId + 1,
       startingCell: cellId,
       startingRowSpan: row,
       startingColumnSpan: column
     }
-    chartList.push(hightestId + 1);
+    chartList.push(highestId + 1);
     cells[cellId]['canAddChart'] = false;
 
     this.setState({ cells });
     this.setState({ charts });
     this.setState({ chartList });
+
+    const chartId = highestId + 1;
+    console.log(chartId, 'checking from add')
+    return { chartId };
   }
 
   addCell(rowId) {
@@ -273,6 +278,14 @@ export default class Matrix extends Component {
     return cellRect;
   }
 
+  _swapChartId(newerChartId, olderChartId) {
+    const charts = this.state.charts;
+    charts[olderChartId]['id'] = newerChartId;
+    charts[newerChartId]['id'] = olderChartId;
+
+    this.setState({ charts });
+  }
+
   renderRows() {
     const rowArray = this.state.rowList;
     return rowArray.map((row, index) => {
@@ -310,7 +323,7 @@ export default class Matrix extends Component {
 
       return (
         <Chart
-          key={chartInfo.id}
+
           id={chartInfo.id}
           originCell={chartInfo.startingCell}
           startingX={x}
@@ -328,6 +341,7 @@ export default class Matrix extends Component {
           rowCount={this.state.rowCount}
           columnCount={this.state.columnCount}
           addChart={this.addChart}
+          swapChartId={this._swapChartId}
         />
       );
     })

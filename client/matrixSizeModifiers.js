@@ -79,8 +79,10 @@ if (windowWidth < 1400) {
   }
 }
 
-if (windowWidth < 1340) {
-  console.log('Width less than 1340')
+console.log('checking to get to width')
+
+if (windowWidth < 1345) {
+  console.log('Width less than 1345')
 
   matrixSizeModifier['columns'] = {
     1: .45,
@@ -153,6 +155,23 @@ if (windowWidth < 1055) {
     8: 2.35
   }
 }
+
+if (windowWidth < 1000) {
+  console.log('Width less than 1000')
+
+  matrixSizeModifier['columns'] = {
+    1: .45,
+    2: .62,
+    3: .95,
+    4: 1.08,
+    5: 1.36,
+    6: 1.65,
+    7: 1.93,
+    8: 2.2
+  }
+}
+
+
 
 
 

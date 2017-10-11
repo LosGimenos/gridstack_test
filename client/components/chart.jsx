@@ -20,6 +20,7 @@ export default class Chart extends Component {
     this.baseWidth = this.props.getCellRect(this.props.originCell).width;
     this.baseHeight = this.props.getCellRect(this.props.originCell).height;
     this.heightCorrected = true;
+    this.clonedTo = null || this.props.clonedTo
   }
 
   componentWillReceiveProps(nextProps) {
@@ -500,9 +501,13 @@ export default class Chart extends Component {
     this._startDragEvent(e);
 
     const { columns, rows } = this._checkPositionInRowAndColumn(this.originCells);
-    const { chartId } = this.props.addChart(this.originCell, rows, columns);
+    const { chartId } = this.props.addChart(this.originCell, rows, columns, true);
     this.props.swapChartId(chartId, this.id);
     this.id = this.props.id;
+    this.originCells.forEach((cell) => {
+      console.log(cell, this.id)
+      this.props.occupyCell(cell);
+    });
   }
 
   _style() {
@@ -520,7 +525,11 @@ export default class Chart extends Component {
 
   _clearChart(e) {
     console.log('on clear these are the origin cells', this.originCells)
-    this.props.removeChart(this.id);
+    let chartIdToRemove = this.id;
+    if (this.clonedTo) {
+      chartIdToRemove = this.clonedTo;
+    }
+    this.props.removeChart(chartIdToRemove);
     this.originCells.forEach((cell) => {
       this.props.unoccupyCell(cell);
     })
@@ -557,6 +566,7 @@ export default class Chart extends Component {
           <button
             className="button__cell--clear"
             onClick={(e) => {
+              console.log(this.id)
               this._clearChart(e);
             }}>X</button>
             {

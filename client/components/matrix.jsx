@@ -90,7 +90,7 @@ export default class Matrix extends Component {
     this.setState({ cells });
   }
 
-  addChart(cellId, row=1, column=1) {
+  addChart(cellId, row=1, column=1, clonedTo=null) {
     let highestId;
     const chartList = this.state.chartList;
     const charts = this.state.charts;
@@ -101,12 +101,18 @@ export default class Matrix extends Component {
     } else {
         highestId = Math.max.apply(null, Object.keys(this.state.charts));
     }
+
     charts[highestId + 1] = {
       id: highestId + 1,
       startingCell: cellId,
       startingRowSpan: row,
       startingColumnSpan: column
     }
+
+    if (clonedTo) {
+      charts[highestId + 1]['clonedTo'] = highestId + 1;
+    }
+
     chartList.push(highestId + 1);
     cells[cellId]['canAddChart'] = false;
 
@@ -240,10 +246,24 @@ export default class Matrix extends Component {
   _removeChart(chartId) {
     const charts = this.state.charts;
     const chartList = this.state.chartList;
-    const indexOfChartId = chartList.indexOf(chartId);
+    let indexOfChartId;
+    let chartToDelete = charts[chartId];
+    console.log(chartId, 'chart id that came in')
 
-    delete charts[chartId];
-    chartList.splice(indexOfChartId, 1);
+    if (chartToDelete == chartId) {
+      console.log('remove all was ok')
+      delete charts[chartId];
+      indexOfChartId = chartList.indexOf(chartId);
+      chartList.splice(indexOfChartId, 1);
+    } else {
+      console.log('weird stuff')
+      const adjustedChartId = charts[chartId]['id'];
+      console.log(adjustedChartId, 'adjusted chart id')
+      delete charts[adjustedChartId];
+      indexOfChartId = chartList.indexOf(adjustedChartId);
+      chartList.splice(indexOfChartId, 1);
+      console.log(charts, chartList)
+    }
 
     this.setState({ charts });
     this.setState({ chartList });
@@ -323,13 +343,14 @@ export default class Matrix extends Component {
 
       return (
         <Chart
-
+          key={chartId}
           id={chartInfo.id}
           originCell={chartInfo.startingCell}
           startingX={x}
           startingY={y}
           startingColumnSpan={startingColumnSpan}
           startingRowSpan={startingRowSpan}
+          clonedTo={chartInfo.clonedTo}
           getCellRect={this._getCellRect}
           isOccupied={this._isCellOccupied}
           getDOMLocationOfCell={this._getDOMLocationOfCell}

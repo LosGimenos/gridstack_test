@@ -295,6 +295,8 @@ export default class Chart extends Component {
   _checkCloneOverlap(e) {
     let chart = e.target;
     let chartLocation;
+    console.log(chart)
+
 
     if (chart.tagName == 'HTML' || chart.tagName == 'document' || chart.tagName == 'BUTTON') {
       console.log('this hit 1')
@@ -303,6 +305,7 @@ export default class Chart extends Component {
     }
 
     if (chart.className == 'not-selectable') {
+      console.log('this hit not selectanle')
       chart = e.target.parentElement.parentElement.parentElement;
     }
 
@@ -313,6 +316,7 @@ export default class Chart extends Component {
       this._clearClonedChartOnError;
       return;
     }
+
 
     const cells = document.querySelectorAll('.matrix-cell');
     const overlappedCells = [];
@@ -340,23 +344,29 @@ export default class Chart extends Component {
       this._clearClonedChartOnError();
       return;
     } else {
-      let remainingOriginCells = this.originCells;
-      const anchorCell = Math.min.apply(null, overlappedCells);
+      try {
+        let remainingOriginCells = this.originCells;
+        const anchorCell = Math.min.apply(null, overlappedCells);
 
-      if (!this._checkAvailableMatrixSize(anchorCell)) {
+        if (!this._checkAvailableMatrixSize(anchorCell)) {
+          return;
+        }
+        const { x, y } = this.props.getDOMLocationOfCell(anchorCell);
+        this._resetPosition(x,y);
+        const { onOccupiedCellOnRelocate, overlappedCellsOnRelocate } = this._checkCollision(x, y);
+
+        overlappedCellsOnRelocate.forEach((cell) => {
+          if (!this._checkIsOriginCell(cell, this.originCells)) {
+            this.props.occupyCell(cell);
+          }
+
+          this.originCell = anchorCell;
+        })
+      } catch(err) {
+        this._clearClonedChartOnError();
         return;
       }
-      const { x, y } = this.props.getDOMLocationOfCell(anchorCell);
-      this._resetPosition(x,y);
-      const { onOccupiedCellOnRelocate, overlappedCellsOnRelocate } = this._checkCollision(x, y);
 
-      overlappedCellsOnRelocate.forEach((cell) => {
-        if (!this._checkIsOriginCell(cell, this.originCells)) {
-          this.props.occupyCell(cell);
-        }
-
-        this.originCell = anchorCell;
-      })
     }
   }
 

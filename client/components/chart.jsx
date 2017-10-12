@@ -118,8 +118,8 @@ export default class Chart extends Component {
   _checkForOverlap(e) {
     let chart = e.target;
     let chartLocation;
-    let clearToDrop = false;
 
+    console.log('check overlap for clear', chart.tagName);
     if (chart.tagName == 'HTML' || chart.tagName == 'document' || chart.tagName == 'BUTTON') {
       return;
     }
@@ -161,7 +161,6 @@ export default class Chart extends Component {
     }
 
     if (!onOccupiedCell && overlappedCells.length >= 2) {
-
       let remainingOriginCells = this.originCells;
       const anchorCell = Math.min.apply(null, overlappedCells);
 
@@ -184,8 +183,7 @@ export default class Chart extends Component {
       remainingOriginCells.forEach((cell) => {
         this.props.unoccupyCell(cell);
       })
-
-      this.originCell = anchorCell;
+      this.originalCell = anchorCell;
     } else if (!onOccupiedCell && overlappedCells.length <= 1) {
       try {
         const anchorCell = Math.min.apply(null, overlappedCells);
@@ -195,14 +193,17 @@ export default class Chart extends Component {
         }
         const { x, y } = this.props.getDOMLocationOfCell(anchorCell);
         this._resetPosition(x,y);
+        this.props.unoccupyCell(this.originCell);
         this.props.occupyCell(anchorCell);
         this.originCell = anchorCell;
       } catch (err) {
         const { x, y } = this.props.getDOMLocationOfCell(this.originCell);
         this._resetPosition(x, y);
+        console.log(this.state.x, this.state.y)
         return;
       }
     }
+    console.log(this.originalCell, 'on finished drag')
     const anchorCell = Math.min.apply(null, overlappedCells);
     this.originCell = anchorCell;
   }

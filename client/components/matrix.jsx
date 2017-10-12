@@ -121,7 +121,6 @@ export default class Matrix extends Component {
     this.setState({ chartList });
 
     const chartId = highestId + 1;
-    console.log(chartId, 'checking from add')
     return { chartId };
   }
 
@@ -202,7 +201,6 @@ export default class Matrix extends Component {
 
   addToRowCount() {
     this.setState({ rowCount: this.state.rowCount + 1 });
-    console.log('add to row')
   }
 
   setStartingDOMLocation(cellId, x, y) {
@@ -248,27 +246,11 @@ export default class Matrix extends Component {
     const chartList = this.state.chartList;
     let indexOfChartId;
     let chartToDelete = charts[chartId];
-    console.log(chartId, 'chart id that came in')
 
     delete charts[chartId];
     indexOfChartId = chartList.indexOf(chartId);
     chartList.splice(indexOfChartId, 1);
 
-    // if (chartToDelete == chartId) {
-    //   console.log('remove all was ok')
-    //   delete charts[chartId];
-    //   indexOfChartId = chartList.indexOf(chartId);
-    //   chartList.splice(indexOfChartId, 1);
-    // } else {
-    //   console.log('weird stuff')
-    //   const adjustedChartId = charts[chartId]['id'];
-    //   console.log(adjustedChartId, 'adjusted chart id')
-    //   delete charts[adjustedChartId];
-    //   indexOfChartId = chartList.indexOf(adjustedChartId);
-    //   chartList.splice(indexOfChartId, 1);
-    //   console.log(charts, chartList)
-    // }
-    console.log(charts, 'charts look like this')
     this.setState({ charts });
     this.setState({ chartList });
   }
@@ -340,7 +322,6 @@ export default class Matrix extends Component {
 
       if (chartInfo.startingColumnSpan != 1) {
         startingColumnSpan = chartInfo.startingColumnSpan * 1.0872;
-        console.log(startingColumnSpan)
       }
       if (chartInfo.startingRowSpan != 1) {
         startingRowSpan = chartInfo.startingRowSpan * 1.085;
@@ -356,8 +337,6 @@ export default class Matrix extends Component {
           startingY={y}
           startingColumnSpan={startingColumnSpan}
           startingRowSpan={startingRowSpan}
-          clonedTo={chartInfo.clonedTo}
-          clonedFrom={chartInfo.clonedFrom}
           getCellRect={this._getCellRect}
           isOccupied={this._isCellOccupied}
           getDOMLocationOfCell={this._getDOMLocationOfCell}
@@ -376,7 +355,6 @@ export default class Matrix extends Component {
   }
 
   render() {
-    {console.log(this.state.charts)}
     return (
       <div className='matrix'>
         <ActionButton

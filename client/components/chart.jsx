@@ -21,8 +21,7 @@ export default class Chart extends Component {
     this.baseWidth = this.props.getCellRect(this.props.originCell).width;
     this.baseHeight = this.props.getCellRect(this.props.originCell).height;
     this.heightCorrected = true;
-    this.clonedTo = null || this.props.clonedTo
-    this.clonedFrom = null || this.props.clonedFrom
+    this.clonedChartId = null;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -45,16 +44,6 @@ export default class Chart extends Component {
       this.setState({ rowCount: nextProps.rowCount });
       this.heightCorrected = false;
     }
-
-    // if (nextProps.id != this.id) {
-    //   this.id = nextProps.id;
-    // }
-    // if (nextProps.clonedTo != this.props.clonedTo) {
-    //   this.clonedTo = nextProps.clonedTo;
-    // }
-    // if (nextProps.clonedFrom != this.props.clonedFrom) {
-    //   this.clonedFrom = nextProps.clonedFrom;
-    // }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -116,11 +105,21 @@ export default class Chart extends Component {
     return { 'onOccupiedCellOnRelocate': onOccupiedCell, 'overlappedCellsOnRelocate': overlappedCells };
   }
 
+  _checkCloneDropCollision() {
+
+    this._checkCollision(x, y);
+  }
+
+  _clearClonedChartOnError() {
+    this.props.removeChart(this.clonedChartId);
+    this.clonedChartId = null;
+  }
+
   _checkForOverlap(e) {
     let chart = e.target;
     let chartLocation;
+    let clearToDrop = false;
 
-    console.log('check overlap for clear', chart.tagName);
     if (chart.tagName == 'HTML' || chart.tagName == 'document' || chart.tagName == 'BUTTON') {
       return;
     }
@@ -162,6 +161,7 @@ export default class Chart extends Component {
     }
 
     if (!onOccupiedCell && overlappedCells.length >= 2) {
+
       let remainingOriginCells = this.originCells;
       const anchorCell = Math.min.apply(null, overlappedCells);
 
@@ -184,7 +184,8 @@ export default class Chart extends Component {
       remainingOriginCells.forEach((cell) => {
         this.props.unoccupyCell(cell);
       })
-      this.originalCell = anchorCell;
+
+      this.originCell = anchorCell;
     } else if (!onOccupiedCell && overlappedCells.length <= 1) {
       try {
         const anchorCell = Math.min.apply(null, overlappedCells);
@@ -194,17 +195,14 @@ export default class Chart extends Component {
         }
         const { x, y } = this.props.getDOMLocationOfCell(anchorCell);
         this._resetPosition(x,y);
-        this.props.unoccupyCell(this.originCell);
         this.props.occupyCell(anchorCell);
         this.originCell = anchorCell;
       } catch (err) {
         const { x, y } = this.props.getDOMLocationOfCell(this.originCell);
         this._resetPosition(x, y);
-        console.log(this.state.x, this.state.y)
         return;
       }
     }
-    console.log(this.originalCell, 'on finished drag')
     const anchorCell = Math.min.apply(null, overlappedCells);
     this.originCell = anchorCell;
   }
@@ -231,7 +229,6 @@ export default class Chart extends Component {
     try {
       chart = e.target.parentElement.parentElement;
     } catch (err) {
-      console.log(err);
       return;
     }
 
@@ -267,7 +264,6 @@ export default class Chart extends Component {
 
     if (!onOccupiedCell && overlappedCells.length >= 1) {
       if (startingWidth == this.state.w + delta.width) {
-        console.log('same width');
         if (this.state.h + delta.height > startingHeight) {
           this._setHeight(overlappedCells, 'bigger');
         } else if (this.state.h + delta.height < startingHeight) {
@@ -275,7 +271,6 @@ export default class Chart extends Component {
         }
         this.setState({ w: this.state.w + delta.width });
       } else if (startingHeight == this.state.h + delta.height) {
-        console.log('same height');
         if (this.state.w + delta.width > startingWidth) {
           this._setWidth(overlappedCells, 'bigger');
         } else if (this.state.w + delta.width < startingWidth) {
@@ -294,19 +289,82 @@ export default class Chart extends Component {
       })
     }
     this.originalCell = anchorCell;
-    console.log(this.originCell, 'on finished resize', overlappedCells)
   }
 
-  _startDragEvent(e) {
-    console.log('checking shift', e.shiftKey)
-
-    this.originCells = [];
+  _checkCloneOverlap(e) {
     let chart = e.target;
-    console.log(chart.className, 'start drag event element')
+    let chartLocation;
+
+    if (chart.tagName == 'HTML' || chart.tagName == 'document' || chart.tagName == 'BUTTON') {
+      console.log('this hit 1')
+      this._clearClonedChartOnError();
+      return;
+    }
 
     if (chart.className == 'not-selectable') {
       chart = e.target.parentElement.parentElement.parentElement;
-      console.log('this is now the chart', chart)
+    }
+
+    try {
+      chartLocation = chart.getBoundingClientRect();
+    } catch (err) {
+      console.log('this hit 2')
+      this._clearClonedChartOnError;
+      return;
+    }
+
+    const cells = document.querySelectorAll('.matrix-cell');
+    const overlappedCells = [];
+    let onOccupiedCell = false;
+
+    cells.forEach((cell) => {
+      const cellLocation = cell.getBoundingClientRect();
+      const overlap = !(chartLocation.right < cellLocation.left ||
+            chartLocation.left > cellLocation.right ||
+            chartLocation.bottom < cellLocation.top ||
+            chartLocation.top > cellLocation.bottom)
+
+      if (overlap) {
+        const cellId = cell.getAttribute('name');
+        overlappedCells.push(cellId);
+        const isOccupied = this.props.isOccupied(cellId);
+
+        if (isOccupied) {
+          onOccupiedCell = true;
+        }
+      }
+    })
+
+    if (onOccupiedCell) {
+      this._clearClonedChartOnError();
+      return;
+    } else {
+      let remainingOriginCells = this.originCells;
+      const anchorCell = Math.min.apply(null, overlappedCells);
+
+      if (!this._checkAvailableMatrixSize(anchorCell)) {
+        return;
+      }
+      const { x, y } = this.props.getDOMLocationOfCell(anchorCell);
+      this._resetPosition(x,y);
+      const { onOccupiedCellOnRelocate, overlappedCellsOnRelocate } = this._checkCollision(x, y);
+
+      overlappedCellsOnRelocate.forEach((cell) => {
+        if (!this._checkIsOriginCell(cell, this.originCells)) {
+          this.props.occupyCell(cell);
+        }
+
+        this.originCell = anchorCell;
+      })
+    }
+  }
+
+  _startDragEvent(e) {
+    this.originCells = [];
+    let chart = e.target;
+
+    if (chart.className == 'not-selectable') {
+      chart = e.target.parentElement.parentElement.parentElement;
     } else if (chart.className == 'button__cell--clear' || chart.className == 'button__cell--clone') {
       chart = e.target.parentElement.parentElement;
     }
@@ -328,7 +386,6 @@ export default class Chart extends Component {
       }
     })
     this.originCells = overlappedCells;
-    console.log('origin cells on drag start', this.originCells, 'this was a drag and this is the origin cell', this.originCell);
   }
 
   _startResizeEvent(e) {
@@ -352,7 +409,6 @@ export default class Chart extends Component {
       }
     })
     this.originCells = overlappedCells;
-    console.log(this.originCells, 'this was a resize and this is the origin cell', this.originCell);
   }
 
   _checkIsOriginCell(cellId, originCells) {
@@ -365,7 +421,6 @@ export default class Chart extends Component {
 
   _setWidth(overlappedCells, smallerOrBigger) {
     const { columns } = this._checkPositionInRowAndColumn(overlappedCells);
-    console.log(columns, 'beginning of setWidth')
     let minWidthModifier = columns;
 
     switch (smallerOrBigger) {
@@ -373,11 +428,9 @@ export default class Chart extends Component {
         if (minWidthModifier == 0) {
           minWidthModifier = 1;
         }
-        console.log('its smaller');
         break;
       }
       case 'bigger': {
-        console.log('bigger fired')
         if (minWidthModifier == 0 || minWidthModifier == 1) {
           minWidthModifier = 2;
         }
@@ -395,25 +448,20 @@ export default class Chart extends Component {
 
     let minWidth = (this.baseWidth * minWidthModifier) - paddingInWidth;
 
-    console.log(minWidth, minWidthModifier, maxWidthModifier, 'the width')
     this.setState({ w: minWidth });
   }
 
   _setHeight(overlappedCells, smallerOrBigger) {
     const { rows } = this._checkPositionInRowAndColumn(overlappedCells);
-    console.log(rows);
     let minHeightModifier = rows;
-    console.log(rows, 'beginning of setHeight')
     switch (smallerOrBigger) {
       case 'smaller': {
         if (minHeightModifier == 0) {
           minHeightModifier = 1;
         }
-        console.log('its smaller');
         break;
       }
       case 'bigger': {
-        console.log('bigger fired')
         if (minHeightModifier == 0 || minHeightModifier == 1) {
           minHeightModifier = 2;
         }
@@ -431,7 +479,6 @@ export default class Chart extends Component {
 
     let minHeight = (this.baseHeight * minHeightModifier) - paddingInHeight;
 
-    console.log(minHeight, minHeightModifier, maxHeightModifier, 'the height')
     this.setState({ h: minHeight });
   }
 
@@ -509,6 +556,7 @@ export default class Chart extends Component {
     const { chartId } = this.props.addChart(this.originCell, rows, columns, true);
     this.props.swapChartId(chartId, this.id);
     this.id = this.props.id;
+    this.clonedChartId = chartId;
   }
 
   _style() {
@@ -538,16 +586,7 @@ export default class Chart extends Component {
   }
 
   _clearChart(e) {
-    console.log('on clear these are the origin cells', this.originCells)
     let chartIdToRemove = this.id;
-    // if (this.clonedTo) {
-    //   chartIdToRemove = this.clonedTo;
-    //   console.log('ran TO')
-    // } else if (this.clonedFrom) {
-    //   chartIdToRemove = this.clonedFrom;
-    //   console.log('from')
-    // }
-    console.log(chartIdToRemove, 'chart id to remove')
     this.props.removeChart(chartIdToRemove);
     this.originCells.forEach((cell) => {
       this.props.unoccupyCell(cell);
@@ -560,7 +599,10 @@ export default class Chart extends Component {
         size={{ width: this.state.w, height: this.state.h }}
         position={{ x: this.state.x - (this.baseWidth * matrixSizeModifiers['columns'][this.state.columnCount]), y: this.state.y - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount]) }}
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
-        onDragStop={(e, d) => { this.setState({ onCloneDrag: false }); this._checkForOverlap(e) }}
+        onDragStop={(e, d) => {
+          this.state.onCloneDrag ? this._checkCloneOverlap(e) : this._checkForOverlap(e);
+          this.setState({ onCloneDrag: false })
+        }}
         onResizeStart={(e, direction, ref, delta, position) => {
           this._startResizeEvent(e);
         }}
@@ -586,7 +628,6 @@ export default class Chart extends Component {
           <button
             className="button__cell--clear"
             onClick={(e) => {
-              console.log(this.id)
               this._clearChart(e);
             }}>X</button>
             {

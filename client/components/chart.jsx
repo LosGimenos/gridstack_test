@@ -13,6 +13,7 @@ export default class Chart extends Component {
       h: (this.props.getCellRect(this.props.originCell).height * this.props.startingRowSpan) * .91,
       columnCount: this.props.columnCount,
       rowCount: this.props.rowCount,
+      onCloneDrag: false
     };
     this.id = this.props.id;
     this.originCell = this.props.originCell;
@@ -504,6 +505,9 @@ export default class Chart extends Component {
   }
 
   _copyChart(e) {
+    this.setState({ onCloneDrag: true });
+    console.log(this.state.onCloneDrag, 'testing on clone drag')
+
     console.log('Went to copy chart');
     this._startDragEvent(e);
 
@@ -526,8 +530,21 @@ export default class Chart extends Component {
       width: '100%',
       height: '100%',
       borderRadius: '30px',
-      textAlign: 'center'
+      textAlign: 'center',
     };
+  }
+
+  _cloneDragStyle() {
+    return {
+      postion: 'absolute',
+      border: '2px solid white',
+      backgroundColor: 'yellow',
+      opacity: '.95',
+      width: '100%',
+      height: '100%',
+      borderRadius: '30px',
+      textAlign: 'center'
+    }
   }
 
   _clearChart(e) {
@@ -553,7 +570,7 @@ export default class Chart extends Component {
         size={{ width: this.state.w, height: this.state.h }}
         position={{ x: this.state.x - (this.baseWidth * matrixSizeModifiers['columns'][this.state.columnCount]), y: this.state.y - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount]) }}
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
-        onDragStop={(e, d) => { this._checkForOverlap(e) }}
+        onDragStop={(e, d) => { this.setState({ onCloneDrag: false }); this._checkForOverlap(e) }}
         onResizeStart={(e, direction, ref, delta, position) => {
           this._startResizeEvent(e);
         }}
@@ -570,9 +587,10 @@ export default class Chart extends Component {
           topLeft: false,
           topRight: false
         }}
+        z={this.state.onCloneDrag ? 100 : 1}
       >
         <div
-          style={this._style()}
+          style={this.state.onCloneDrag ? this._cloneDragStyle() : this._style()}
           name={this.id}
           >
           <button

@@ -304,8 +304,8 @@ export default class Matrix extends Component {
 
   _swapChartId(newerChartId, olderChartId) {
     const charts = this.state.charts;
-    charts[olderChartId]['id'] = newerChartId;
-    charts[newerChartId]['id'] = olderChartId;
+    // charts[olderChartId]['id'] = newerChartId;
+    // charts[newerChartId]['id'] = olderChartId;
 
     charts[olderChartId]['clonedFrom'] = olderChartId;
 

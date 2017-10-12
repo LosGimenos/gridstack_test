@@ -213,6 +213,7 @@
   transition: all 200ms ease;
   transition-property: left, top;
 }
+
 .react-grid-item.cssTransforms {
   transition-property: transform;
 }
@@ -275,6 +276,3 @@
 .__resizable_base {
   display: none;
 }
-
-
-

@@ -499,26 +499,16 @@ export default class Chart extends Component {
         this.props.occupyCell(cell);
       })
     }
-    console.log(onOccupiedCell, noCellExists)
-
-    console.log(clonedChartLocation)
   }
 
   _copyChart(e) {
     this.setState({ onCloneDrag: true });
-    console.log(this.state.onCloneDrag, 'testing on clone drag')
-
-    console.log('Went to copy chart');
     this._startDragEvent(e);
 
     const { columns, rows } = this._checkPositionInRowAndColumn(this.originCells);
     const { chartId } = this.props.addChart(this.originCell, rows, columns, true);
     this.props.swapChartId(chartId, this.id);
     this.id = this.props.id;
-    this.originCells.forEach((cell) => {
-      console.log(cell, this.id)
-      this.props.occupyCell(cell);
-    });
   }
 
   _style() {

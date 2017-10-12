@@ -46,15 +46,15 @@ export default class Chart extends Component {
       this.heightCorrected = false;
     }
 
-    if (nextProps.id != this.id) {
-      this.id = nextProps.id;
-    }
-    if (nextProps.clonedTo != this.props.clonedTo) {
-      this.clonedTo = nextProps.clonedTo;
-    }
-    if (nextProps.clonedFrom != this.props.clonedFrom) {
-      this.clonedFrom = nextProps.clonedFrom;
-    }
+    // if (nextProps.id != this.id) {
+    //   this.id = nextProps.id;
+    // }
+    // if (nextProps.clonedTo != this.props.clonedTo) {
+    //   this.clonedTo = nextProps.clonedTo;
+    // }
+    // if (nextProps.clonedFrom != this.props.clonedFrom) {
+    //   this.clonedFrom = nextProps.clonedFrom;
+    // }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -540,13 +540,13 @@ export default class Chart extends Component {
   _clearChart(e) {
     console.log('on clear these are the origin cells', this.originCells)
     let chartIdToRemove = this.id;
-    if (this.clonedTo) {
-      chartIdToRemove = this.clonedTo;
-      console.log('ran TO')
-    } else if (this.clonedFrom) {
-      chartIdToRemove = this.clonedFrom;
-      console.log('from')
-    }
+    // if (this.clonedTo) {
+    //   chartIdToRemove = this.clonedTo;
+    //   console.log('ran TO')
+    // } else if (this.clonedFrom) {
+    //   chartIdToRemove = this.clonedFrom;
+    //   console.log('from')
+    // }
     console.log(chartIdToRemove, 'chart id to remove')
     this.props.removeChart(chartIdToRemove);
     this.originCells.forEach((cell) => {

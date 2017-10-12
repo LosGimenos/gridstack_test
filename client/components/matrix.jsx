@@ -349,7 +349,7 @@ export default class Matrix extends Component {
 
       return (
         <Chart
-          key={parseInt(''+chartId+x+y)}
+          key={chartId}
           id={chartInfo.id}
           originCell={chartInfo.startingCell}
           startingX={x}

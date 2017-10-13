@@ -216,8 +216,8 @@ export default class Chart extends Component {
     const availableWidthIndex = this.props.findPositionInRow(cellId) + 1;
     const availableHeightIndex = this.props.findPositionInColumn(cellId) + 1;
 
-    const currentWidthIndex = parseInt((this.state.w / this.baseWidth).toString().split('')[0]);
-    const currentHeightIndex = parseInt((this.state.h / this.baseHeight).toString().split('')[0]);
+    const currentWidthIndex = Math.ceil(this.state.w / this.baseWidth);
+    const currentHeightIndex = Math.ceil(this.state.h / this.baseHeight);
 
     return (availableWidthIndex < currentWidthIndex || availableHeightIndex < currentHeightIndex) ? false : true;
   }

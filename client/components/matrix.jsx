@@ -321,10 +321,10 @@ export default class Matrix extends Component {
       let startingRowSpan = 1;
 
       if (chartInfo.startingColumnSpan != 1) {
-        startingColumnSpan = chartInfo.startingColumnSpan * 1.0872;
+        startingColumnSpan = chartInfo.startingColumnSpan * 1.07;
       }
       if (chartInfo.startingRowSpan != 1) {
-        startingRowSpan = chartInfo.startingRowSpan * 1.085;
+        startingRowSpan = chartInfo.startingRowSpan * 1.07;
       }
 
 

@@ -295,8 +295,6 @@ export default class Chart extends Component {
   _checkCloneOverlap(e) {
     let chart = e.target;
     let chartLocation;
-    console.log(chart)
-
 
     if (chart.tagName == 'HTML' || chart.tagName == 'document' || chart.tagName == 'BUTTON') {
       console.log('this hit 1')

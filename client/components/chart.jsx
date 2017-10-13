@@ -349,6 +349,7 @@ export default class Chart extends Component {
         const anchorCell = Math.min.apply(null, overlappedCells);
 
         if (!this._checkAvailableMatrixSize(anchorCell)) {
+          this._clearClonedChartOnError();
           return;
         }
         const { x, y } = this.props.getDOMLocationOfCell(anchorCell);
@@ -366,7 +367,6 @@ export default class Chart extends Component {
         this._clearClonedChartOnError();
         return;
       }
-
     }
   }
 

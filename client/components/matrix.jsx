@@ -11,34 +11,6 @@ export default class Matrix extends Component {
         '11': {
           id: 11,
           canAddChart: true
-        },
-        '12': {
-          id: 12,
-          canAddChart: true
-        },
-        '13': {
-          id: 13,
-          canAddChart: true
-        },
-        '14': {
-          id: 14,
-          canAddChart: true
-        },
-        '21': {
-          id: 21,
-          canAddChart: true
-        },
-        '22': {
-          id: 22,
-          canAddChart: true
-        },
-        '23': {
-          id: 23,
-          canAddChart: true
-        },
-        '24': {
-          id: 24,
-          canAddChart: true
         }
       },
       chartList: [],
@@ -46,16 +18,12 @@ export default class Matrix extends Component {
       rows: {
         '1': {
           id: 1,
-          cellsInRow: [11,12,13,14]
-        },
-        '2': {
-          id: 2,
-          cellsInRow: [21,22,23,24]
+          cellsInRow: [11]
         }
       },
-      rowList: [1,2],
-      columnCount: 4,
-      rowCount: 2
+      rowList: [1],
+      columnCount: 1,
+      rowCount: 1
     };
     this.columnLimit = 8;
     this.rowLimit = 6;

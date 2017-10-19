@@ -71,6 +71,8 @@ if (windowHeight <= 575) {
 
 calculateIncrements(calcSizeDifference(windowWidth, 'width'), 'width')
 
+// Calc the size differential based on the percentage difference.
+
 function calculateIncrements(baseModifier, widthOrHeight) {
   let rowTwo;
   let rowThree;
@@ -121,6 +123,8 @@ function calculateIncrements(baseModifier, widthOrHeight) {
   }
 }
 
+//tests values against established percent difference
+
 function getValForPercentDifference(val1, percent) {
   let value = val1;
   let val2;
@@ -137,6 +141,8 @@ function getValForPercentDifference(val1, percent) {
 
   return val2
 }
+
+//calc base size differential from current size against max size
 
 function calcSizeDifference(currentSize, widthOrHeight) {
   const baseWidth = 1440;

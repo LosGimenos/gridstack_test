@@ -119,7 +119,6 @@ export default class Chart extends Component {
     let chart = e.target;
     let chartLocation;
 
-    console.log('check overlap for clear', chart.tagName);
     if (chart.tagName == 'HTML' || chart.tagName == 'document' || chart.tagName == 'BUTTON') {
       return;
     }
@@ -183,7 +182,7 @@ export default class Chart extends Component {
       remainingOriginCells.forEach((cell) => {
         this.props.unoccupyCell(cell);
       })
-      this.originalCell = anchorCell;
+      this.originCell = anchorCell;
     } else if (!onOccupiedCell && overlappedCells.length <= 1) {
       try {
         const anchorCell = Math.min.apply(null, overlappedCells);
@@ -199,11 +198,9 @@ export default class Chart extends Component {
       } catch (err) {
         const { x, y } = this.props.getDOMLocationOfCell(this.originCell);
         this._resetPosition(x, y);
-        console.log(this.state.x, this.state.y)
         return;
       }
     }
-    console.log(this.originalCell, 'on finished drag')
     const anchorCell = Math.min.apply(null, overlappedCells);
     this.originCell = anchorCell;
   }
@@ -289,7 +286,7 @@ export default class Chart extends Component {
         this.props.unoccupyCell(cell);
       })
     }
-    this.originalCell = anchorCell;
+    this.originCell = anchorCell;
   }
 
   _checkCloneOverlap(e) {
@@ -399,9 +396,12 @@ export default class Chart extends Component {
 
   _startResizeEvent(e) {
     this.originCells = [];
-    const chart = e.target.parentElement.parentElement;
+    // const chart = e.target.parentElement.parentElement;
+    // const chart = e.target.parentElement.parentElement.firstChild;
+    const chart = e;
 
     const chartLocation = chart.getBoundingClientRect();
+
     const cells = document.querySelectorAll('.matrix-cell');
     const overlappedCells = [];
 
@@ -418,6 +418,7 @@ export default class Chart extends Component {
       }
     })
     this.originCells = overlappedCells;
+
   }
 
   _checkIsOriginCell(cellId, originCells) {
@@ -602,10 +603,15 @@ export default class Chart extends Component {
     })
   }
 
+  _setRndWidth() {
+    return this.state.w;
+  }
+
   render() {
+    {console.log(this.state.w, 'from component render')}
     return (
       <Rnd
-        size={{ width: this.state.w, height: this.state.h }}
+        size={{ width: this._setRndWidth(), height: this.state.h }}
         position={{ x: this.state.x - (this.baseWidth * matrixSizeModifiers['columns'][this.state.columnCount]), y: this.state.y - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount]) }}
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
         onDragStop={(e, d) => {
@@ -613,7 +619,8 @@ export default class Chart extends Component {
           this.setState({ onCloneDrag: false })
         }}
         onResizeStart={(e, direction, ref, delta, position) => {
-          this._startResizeEvent(e);
+          console.log(this)
+          this._startResizeEvent(ref);
         }}
         onResizeStop={(e, direction, ref, delta, position) => {
           this._checkResizeOverlap(e, delta);
@@ -639,15 +646,6 @@ export default class Chart extends Component {
             onClick={(e) => {
               this._clearChart(e);
             }}>X</button>
-            {
-          // <button
-          //   className='button__cell--clone'
-          //   onClick={(e) => {
-          //     this._cloneChart(e);
-          //   }}
-          // >Copy
-          // </button>
-            }
           <span><p className="not-selectable">id: { this.id }</p></span>
         </div>
       </Rnd>

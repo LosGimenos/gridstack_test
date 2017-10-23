@@ -33,8 +33,8 @@ export default class Chart extends Component {
       const chartHeight = this.state.h - chartHeightDifference;
 
       this.setState({ columnCount: nextProps.columnCount });
-      this.setState({ w:  chartWidth });
-      this.setState({ h:  chartHeight });
+      this.setState({ w: chartWidth });
+      this.setState({ h: chartHeight });
       this.setState({ x: left });
       this.setState({ y: top });
 
@@ -294,20 +294,17 @@ export default class Chart extends Component {
     let chartLocation;
 
     if (chart.tagName == 'HTML' || chart.tagName == 'document' || chart.tagName == 'BUTTON') {
-      console.log('this hit 1')
       this._clearClonedChartOnError();
       return;
     }
 
     if (chart.className == 'not-selectable') {
-      console.log('this hit not selectanle')
       chart = e.target.parentElement.parentElement.parentElement;
     }
 
     try {
       chartLocation = chart.getBoundingClientRect();
     } catch (err) {
-      console.log('this hit 2')
       this._clearClonedChartOnError;
       return;
     }
@@ -603,15 +600,10 @@ export default class Chart extends Component {
     })
   }
 
-  _setRndWidth() {
-    return this.state.w;
-  }
-
   render() {
-    {console.log(this.state.w, 'from component render')}
     return (
       <Rnd
-        size={{ width: this._setRndWidth(), height: this.state.h }}
+        size={{ width: this.state.w, height: this.state.h }}
         position={{ x: this.state.x - (this.baseWidth * matrixSizeModifiers['columns'][this.state.columnCount]), y: this.state.y - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount]) }}
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
         onDragStop={(e, d) => {
@@ -619,7 +611,6 @@ export default class Chart extends Component {
           this.setState({ onCloneDrag: false })
         }}
         onResizeStart={(e, direction, ref, delta, position) => {
-          console.log(this)
           this._startResizeEvent(ref);
         }}
         onResizeStop={(e, direction, ref, delta, position) => {

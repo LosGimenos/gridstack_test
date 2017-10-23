@@ -1,4 +1,4 @@
-window.onresize = () => {location.reload()};
+// window.onresize = () => {location.reload()};
 
 let matrixSizeModifier;
 const windowWidth = window.innerWidth;

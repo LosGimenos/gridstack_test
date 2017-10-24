@@ -9,8 +9,8 @@ export default class Chart extends Component {
     this.state = {
       x: this.props.startingX,
       y: this.props.startingY,
-      w: (this.props.getCellRect(this.props.originCell).width * this.props.startingColumnSpan) * .88,
-      h: (this.props.getCellRect(this.props.originCell).height * this.props.startingRowSpan) * .91,
+      w: this.props.startingWidth,
+      h: this.props.startingHeight,
       columnCount: this.props.columnCount,
       rowCount: this.props.rowCount,
       onCloneDrag: false

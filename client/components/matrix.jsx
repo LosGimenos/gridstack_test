@@ -287,14 +287,27 @@ export default class Matrix extends Component {
       const { x, y } = this._getDOMLocationOfCell(originCell);
       let startingColumnSpan = 1;
       let startingRowSpan = 1;
+      let startingWidth;
+      let startingHeight;
 
       if (chartInfo.startingColumnSpan != 1) {
-        startingColumnSpan = chartInfo.startingColumnSpan * 1.07;
-      }
-      if (chartInfo.startingRowSpan != 1) {
-        startingRowSpan = chartInfo.startingRowSpan * 1.07;
+        const width = this._getCellRect(chartInfo.startingCell).width;
+        const paddingInWidth = width * .13
+
+        startingWidth = ( width * chartInfo.startingColumnSpan ) - paddingInWidth;
+      } else {
+        startingWidth = (this._getCellRect(chartInfo.startingCell).width * chartInfo.startingColumnSpan) * .88;
       }
 
+      if (chartInfo.startingRowSpan != 1) {
+        // startingRowSpan = chartInfo.startingRowSpan * 1.07;
+        const height = this._getCellRect(chartInfo.startingCell).height;
+        const paddingInHeight = height * .08;
+
+        startingHeight = ( height * chartInfo.startingRowSpan ) - paddingInHeight;
+      } else {
+        startingHeight = (this._getCellRect(chartInfo.startingCell).height * chartInfo.startingRowSpan) * .91;
+      }
 
       return (
         <Chart
@@ -303,6 +316,8 @@ export default class Matrix extends Component {
           originCell={chartInfo.startingCell}
           startingX={x}
           startingY={y}
+          startingWidth={startingWidth}
+          startingHeight={startingHeight}
           startingColumnSpan={startingColumnSpan}
           startingRowSpan={startingRowSpan}
           getCellRect={this._getCellRect}

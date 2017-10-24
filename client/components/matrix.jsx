@@ -300,7 +300,6 @@ export default class Matrix extends Component {
       }
 
       if (chartInfo.startingRowSpan != 1) {
-        // startingRowSpan = chartInfo.startingRowSpan * 1.07;
         const height = this._getCellRect(chartInfo.startingCell).height;
         const paddingInHeight = height * .08;
 

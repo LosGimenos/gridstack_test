@@ -1,4 +1,4 @@
-// window.onresize = () => {location.reload()};
+window.onresize = () => {location.reload()};
 
 let matrixSizeModifier;
 const windowWidth = window.innerWidth;
@@ -27,49 +27,8 @@ matrixSizeModifier = {
   }
 }
 
-if (windowHeight < 800) {
-  console.log('800 it!')
-
-  calculateIncrements(.38, 'height');
-}
-
-if (windowHeight < 750) {
-  console.log('750 it!')
-
-  calculateIncrements(.34, 'height');
-}
-
-if (windowHeight < 700) {
-  console.log('700 it!')
-
-  calculateIncrements(.33, 'height');
-}
-
-if (windowHeight < 650) {
-  console.log('650 it!')
-
-  calculateIncrements(.3, 'height');
-}
-
-if (windowHeight <= 625) {
-  console.log('625 it!')
-
-  calculateIncrements(.29, 'height');
-}
-
-if (windowHeight <= 600) {
-  console.log('600 it!')
-
-  calculateIncrements(.28, 'height');
-}
-
-if (windowHeight <= 575) {
-  console.log('575 it!')
-
-  calculateIncrements(.27, 'height');
-}
-
-calculateIncrements(calcSizeDifference(windowWidth, 'width'), 'width')
+calculateIncrements(calcSizeDifference(windowWidth, 'width'), 'width');
+calculateIncrements(calcSizeDifference(windowHeight, 'height'), 'height');
 
 // Calc the size differential based on the percentage difference.
 
@@ -105,7 +64,7 @@ function calculateIncrements(baseModifier, widthOrHeight) {
       break;
 
     case 'height':
-      rowTwo = getValForPercentDifference(baseModifier, 75);
+      rowTwo = getValForPercentDifference(baseModifier, 70);
       rowThree = getValForPercentDifference(rowTwo, 42);
       rowFour = getValForPercentDifference(rowThree, 29);
       rowFive = getValForPercentDifference(rowFour, 23);
@@ -148,12 +107,20 @@ function calcSizeDifference(currentSize, widthOrHeight) {
   const baseWidth = 1440;
   const baseHeight = 803;
   let sizeDifferential;
+  let paddingModifier;
 
   switch (widthOrHeight) {
-    case 'width':
-    sizeDifferential = .34 - Math.round((baseWidth - currentSize) / 10) * .00231;
-    console.log(sizeDifferential)
-    break;
+    case 'width': {
+      paddingModifier = .00231;
+      sizeDifferential = .34 - Math.round((baseWidth - currentSize) / 10) * paddingModifier;
+      break;
+    }
+
+    case 'height': {
+      paddingModifier = .00500009;
+      sizeDifferential = .4 - Math.round((baseHeight - currentSize) / 10) * paddingModifier;
+      break
+    }
   }
 
   return sizeDifferential;

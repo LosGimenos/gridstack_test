@@ -571,7 +571,7 @@ export default class Chart extends Component {
       postion: 'absolute',
       border: '2px solid white',
       backgroundColor: '#4C99E8',
-      opacity: '.95',
+      opacity: '.97',
       width: '100%',
       height: '100%',
       borderRadius: '30px',
@@ -584,7 +584,7 @@ export default class Chart extends Component {
       postion: 'absolute',
       border: '2px solid white',
       backgroundColor: 'yellow',
-      opacity: '.95',
+      opacity: '.97',
       width: '100%',
       height: '100%',
       borderRadius: '30px',
@@ -636,7 +636,7 @@ export default class Chart extends Component {
             className="button__cell--clear"
             onClick={(e) => {
               this._clearChart(e);
-            }}>X</button>
+            }}>x</button>
           <span><p className="not-selectable">id: { this.id }</p></span>
         </div>
       </Rnd>

@@ -50,7 +50,6 @@ export default class Cell extends Component {
         name={this.cellId}
         style={this._style()}>
         { this.renderSelector() }
-        <span>Id: { this.cellId }</span>
       </div>
 
     ) || null;

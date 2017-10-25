@@ -11,10 +11,7 @@ const Routes = () => (
   <Router>
     <div>
       <Switch>
-        <Route exact path="/" component={App} />
-        <Route path="/matrix-test" component={Matrix} />
-        <Route path="/dragdrop" component={Drag} />
-        <Route path="/resizable" component={JqRoot} />
+        <Route exact path="/" component={Matrix} />
       </Switch>
     </div>
   </Router>

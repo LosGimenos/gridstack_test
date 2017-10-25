@@ -92,12 +92,16 @@
   border-radius: 10px;
 }
 
+#root {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .matrix {
   position: relative;
   display: flex;
   flex-direction: column;
-  top: 20vh;
-  left: 20%;
   border: 1px solid black;
   width: 722px;
   height: 403.5px;
@@ -108,14 +112,18 @@
   user-select: none;
 }
 
-.row {
+.matrix-row {
   border: 1px solid black;
   display: flex;
   justify-content: space-between;
   height: 100%;
+  padding: 0;
+  margin: 0;
 }
 
 .matrix-cell {
+  padding: 0;
+  margin: 0;
   position: relative;
   display: flex;
   justify-content: center;
@@ -315,4 +323,9 @@
 
 .__resizable_base {
   display: none;
+}
+
+.chart {
+  margin: 0;
+  padding: 0;
 }

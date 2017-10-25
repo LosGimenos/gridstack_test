@@ -17,7 +17,7 @@ const Row = ({ matrixCells, cellsInRow, rowId, addChart, setStartingDOMLocation,
     );
   })
   return (
-    <div className='row'>
+    <div className='matrix-row'>
       { renderCells }
     </div>
   );

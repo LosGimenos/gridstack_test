@@ -4,9 +4,7 @@ const webpack = require('webpack');
 const config = {
   context: path.join(__dirname, 'client'),
   entry: [
-            './index.jsx',
-            'webpack/hot/dev-server',
-            'webpack-dev-server/client?http://localhost:8080'
+            './index.jsx'
          ],
   output: {
     path: path.join(__dirname, 'dist', 'js'),

@@ -599,12 +599,14 @@ export default class Chart extends Component {
       this.props.unoccupyCell(cell);
     })
   }
+// - (this.baseWidth * matrixSizeModifiers['columns'][this.state.columnCount])
+// - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount])
 
   render() {
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
-        position={{ x: this.state.x - (this.baseWidth * matrixSizeModifiers['columns'][this.state.columnCount]), y: this.state.y - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount]) }}
+        position={{ x: this.state.x, y: this.state.y }}
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
         onDragStop={(e, d) => {
           this.state.onCloneDrag ? this._checkCloneOverlap(e) : this._checkForOverlap(e);
@@ -629,6 +631,7 @@ export default class Chart extends Component {
         z={this.state.onCloneDrag ? 100 : 1}
       >
         <div
+          className={'chart'}
           style={this.state.onCloneDrag ? this._cloneDragStyle() : this._style()}
           name={this.id}
           >

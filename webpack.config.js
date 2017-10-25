@@ -8,7 +8,7 @@ const config = {
          ],
   output: {
     path: path.join(__dirname, 'dist', 'js'),
-    filename: 'bundle.js',
+    filename: 'matrix_bundle.js',
     publicPath: '/'
   },
   module: {

@@ -1,4 +1,4 @@
-#__resizable0 {
+div[id^='__resizable'], div[class*='__resizable'] {
   display: none;
 }
 

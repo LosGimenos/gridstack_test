@@ -632,6 +632,7 @@ export default class Chart extends Component {
           topRight: false
         }}
         z={this.state.onCloneDrag ? 100 : 1}
+        bounds={'parent'}
       >
         <div
           className={'chart'}

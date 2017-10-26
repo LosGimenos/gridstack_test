@@ -642,7 +642,7 @@ export default class Chart extends Component {
             className="button__cell--clear"
             onClick={(e) => {
               this._clearChart(e);
-            }}>x</button>
+            }}><p className='not-selectable'>x</p></button>
           <span><p className="not-selectable">id: { this.id }</p></span>
         </div>
       </Rnd>

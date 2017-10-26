@@ -1,4 +1,4 @@
-div[id^='__resizable'], div[class*='__resizable'] {
+div[id^='__resizable'], div[id*='__resizable'] {
   display: none;
 }
 
@@ -83,6 +83,7 @@ div[id^='__resizable'], div[class*='__resizable'] {
 
 .not-selectable {
   user-select: none;
+  margin: 0;
 }
 
 .matrix-row {

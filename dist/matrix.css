@@ -1,0 +1,124 @@
+#__resizable0 {
+  display: none;
+}
+
+.chart {
+  margin: 0;
+  padding: 0;
+}
+
+.selector {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #FDE3A7;
+  cursor: pointer;
+  height: 35%;
+  width: 50%;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.selector:hover {
+  background-color: #337ab7;
+  color: #fff;
+}
+
+.selector span {
+  height: 10px;
+}
+
+.selector span p {
+  height: 10px;
+  margin: 0;
+}
+
+.button__cell--clear {
+  position: absolute;
+  top: 2%;
+  left: 2%;
+  border-radius: 10px;
+  border: 1px solid #d43f3a;
+  background-color: #E82C57;
+  font-size: 10px;
+  font-weight: 400;
+  /*line-height: 1.42;*/
+  white-space: nowrap;
+}
+
+.button__addRow {
+  position: absolute;
+  cursor: pointer;
+  bottom: -7%;
+  width: 100%;
+  color: #fff;
+  background-color: #337ab7;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42;
+  white-space: nowrap;
+  border: 1px solid #2e6da4;
+  border-radius: 4px;
+}
+
+.button__addColumn {
+  position: absolute;
+  width: 6%;
+  right: -6.5%;
+  height: 100%;
+  cursor: pointer;
+  color: #fff;
+  background-color: #337ab7;
+  font-size: .55em;
+  font-weight: 400;
+  line-height: 1.42;
+  border: 1px solid #2e6da4;
+  border-radius: 4px;
+}
+
+.not-selectable {
+  user-select: none;
+}
+
+.matrix-row {
+  border: 1px solid black;
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.matrix-cell {
+  padding: 0;
+  margin: 0;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #000;
+  text-align: center;
+  user-select: none;
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.matrix {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  width: 722px;
+  height: 403.5px;
+  user-select: none;
+}

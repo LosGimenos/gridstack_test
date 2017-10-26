@@ -603,10 +603,13 @@ export default class Chart extends Component {
 // - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount])
 
   render() {
+    let matrix = document.querySelector('.matrix');
+    let cell = document.getElementsByName(this.originCell)[0];
+
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
-        position={{ x: this.state.x, y: this.state.y }}
+        position={{ x: this.state.x + (cell.offsetWidth / 16), y: this.state.y + (cell.offsetHeight / 32) }}
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
         onDragStop={(e, d) => {
           this.state.onCloneDrag ? this._checkCloneOverlap(e) : this._checkForOverlap(e);

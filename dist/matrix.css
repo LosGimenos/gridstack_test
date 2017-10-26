@@ -123,3 +123,7 @@ div[id^='__resizable'], div[id*='__resizable'] {
   height: 403.5px;
   user-select: none;
 }
+
+button:focus {
+  outline: 0;
+}

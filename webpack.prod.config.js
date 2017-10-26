@@ -18,7 +18,7 @@ const config = {
         loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
-          presets: ['es2015', 'react'],
+          presets: ['env', 'react'],
         }
       },
       {
@@ -28,7 +28,12 @@ const config = {
     ],
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin()
   ]
 }
 

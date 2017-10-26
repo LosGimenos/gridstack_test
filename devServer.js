@@ -1,6 +1,6 @@
 const WebpackDevServer = require('webpack-dev-server');
 const webpack = require('webpack');
-const config = require('./webpack.config.js');
+const config = require('./webpack.dev.config.js');
 const path = require('path');
 
 const compiler = webpack(config);
@@ -8,7 +8,7 @@ const server = new WebpackDevServer(compiler, {
   contentBase: 'dist',
   hot: true,
   hotOnly: true,
-  filename: 'bundle.js',
+  filename: 'matrix_bundle.js',
   publicPath: '/',
   stats: {
     colors: true,

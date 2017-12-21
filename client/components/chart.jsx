@@ -625,8 +625,10 @@ export default class Chart extends Component {
         size={{ width: this.state.w, height: this.state.h }}
         position={{
           x: newXPosition + cellMarginWidthAdjustment,
+          // deprecated padding adjustmet
           // - (cell.offsetWidth),
           y: newYPosition + cellMarginHeightAdjustment
+          // deprecated padding adjustmet
           // + (cell.offsetHeight / 32)
 
         }}

@@ -165,6 +165,7 @@ export default class Matrix extends Component {
     }
 
     this.updateCellLocations();
+
   }
 
   addToRowCount() {

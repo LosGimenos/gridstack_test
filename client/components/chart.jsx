@@ -599,6 +599,12 @@ export default class Chart extends Component {
       this.props.unoccupyCell(cell);
     })
   }
+
+  _callToDb() {
+
+  }
+
+  // deprecated modifiers for responsive scaling.
 // - (this.baseWidth * matrixSizeModifiers['columns'][this.state.columnCount])
 // - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount])
 
@@ -606,10 +612,24 @@ export default class Chart extends Component {
     let matrix = document.querySelector('.matrix');
     let cell = document.getElementsByName(this.originCell)[0];
 
+    // center chart within selected grid. offset css padding
+    let cellMarginWidthAdjustment = (cell.offsetWidth * .065);
+    let cellMarginHeightAdjustment = (cell.offsetHeight * .04);
+
+    let containerRect = document.querySelector('.matrix').getBoundingClientRect();
+    let newXPosition = this.state.x - containerRect.x;
+    let newYPosition = this.state.y - containerRect.y;
+
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
-        position={{ x: this.state.x + (cell.offsetWidth / 16), y: this.state.y + (cell.offsetHeight / 32) }}
+        position={{
+          x: newXPosition + cellMarginWidthAdjustment,
+          // - (cell.offsetWidth),
+          y: newYPosition + cellMarginHeightAdjustment
+          // + (cell.offsetHeight / 32)
+
+        }}
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
         onDragStop={(e, d) => {
           this.state.onCloneDrag ? this._checkCloneOverlap(e) : this._checkForOverlap(e);

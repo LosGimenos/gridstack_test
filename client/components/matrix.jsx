@@ -4,26 +4,28 @@ import Row from './row.jsx';
 import ActionButton from './button.jsx';
 
 export default class Matrix extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      cells: {
-        '11': {
-          id: 11,
-          canAddChart: true
-        }
-      },
-      chartList: [],
-      charts: {},
-      rows: {
-        '1': {
-          id: 1,
-          cellsInRow: [11]
-        }
-      },
-      rowList: [1],
-      columnCount: 1,
-      rowCount: 1
+      // cells: {
+      //   '11': {
+      //     id: 11,
+      //     canAddChart: true
+      //   }
+      // },
+      cells: this.props.cells,
+      chartList: this.props.chartList,
+      charts: this.props.charts,
+      // rows: {
+      //   '1': {
+      //     id: 1,
+      //     cellsInRow: [11]
+      //   }
+      // },
+      rows: this.props.rows,
+      rowList: this.props.rowList,
+      columnCount: this.props.columnCount,
+      rowCount: this.props.rowCount
     };
     this.columnLimit = 8;
     this.rowLimit = 6;

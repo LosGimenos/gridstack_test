@@ -11,10 +11,30 @@ import get_initial_matrix_state from './core_api.jsx';
 var domain_prefix = '127.0.0.1:8000';
 console.log(domain_prefix);
 var slide_id = 14;
-var initial_state = get_initial_matrix_state(domain_prefix, slide_id);
-console.log(initial_state.result);
 
-render(<Matrix />, document.querySelector('#root'));
+function renderInitialMatrix(json) {
+  console.log(json);
+  if (json.result == 'Success') {
+      var chartList = json.chartList;
+      var rowList = json.rowList;
+      render(
+          <Matrix
+              cells={json.cells}
+              chartList={chartList}
+              charts={json.charts}
+              rows={json.rows}
+              rowList={rowList}
+              columnCount={json.col_count}
+              rowCount={json.row_count}
+          />,
+          document.querySelector('#root'));
+  }
+  else {
+    render(<Matrix/>, document.querySelector('#root'));
+  }
+}
+
+get_initial_matrix_state(renderInitialMatrix, domain_prefix, slide_id);
 
 if (module.hot) {
   module.hot.accept();

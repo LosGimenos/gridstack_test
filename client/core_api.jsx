@@ -1,7 +1,7 @@
 import $ from 'jquery';
 
 
-export default function get_initial_matrix_state(domain_prefix, slide_id) {
+export default function get_initial_matrix_state(callback, domain_prefix, slide_id) {
     $.ajax({
         url : "http://" + domain_prefix + "/ajax_get_initial_matrix_state", // the endpoint
         type : "POST", // http method
@@ -10,8 +10,7 @@ export default function get_initial_matrix_state(domain_prefix, slide_id) {
         // handle a successful response
         success : function(json) {
             console.log("Successful response");
-            console.log(json.result);
-            return json;
+            callback(json);
         },
 
         // handle a non-successful response

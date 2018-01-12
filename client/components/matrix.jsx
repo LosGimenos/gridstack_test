@@ -7,21 +7,9 @@ export default class Matrix extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // cells: {
-      //   '11': {
-      //     id: 11,
-      //     canAddChart: true
-      //   }
-      // },
       cells: this.props.cells,
       chartList: this.props.chartList,
       charts: this.props.charts,
-      // rows: {
-      //   '1': {
-      //     id: 1,
-      //     cellsInRow: [11]
-      //   }
-      // },
       rows: this.props.rows,
       rowList: this.props.rowList,
       columnCount: this.props.columnCount,

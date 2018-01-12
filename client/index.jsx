@@ -9,8 +9,7 @@ import get_initial_matrix_state from './core_api.jsx';
 // var slide_id = $('#slide-id').val();
 // var domain_prefix = $('#domain-prefix').val();
 var domain_prefix = '127.0.0.1:8000';
-console.log(domain_prefix);
-var slide_id = 14;
+var slide_id = 55;
 
 function renderInitialMatrix(json) {
   console.log(json);

@@ -11,7 +11,7 @@ var domain_prefix = $('#domain-prefix').val();
 var user_id = $('#user-id').val();
 if (slide_id == null){
     var domain_prefix = '127.0.0.1:8000';
-    var slide_id = 61;
+    var slide_id = 102;
     var user_id = 2;
 }
 

@@ -22,6 +22,9 @@ export default class Chart extends Component {
     this.baseHeight = this.props.getCellRect(this.props.originCell).height;
     this.heightCorrected = true;
     this.clonedChartId = null;
+    this.rowSpan = 0;
+    this.colSpan = 0;
+    this.objectID = this.props.objectID;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -455,6 +458,8 @@ export default class Chart extends Component {
 
     let minWidth = (this.baseWidth * minWidthModifier) - paddingInWidth;
 
+    this.colSpan = minWidthModifier;
+
     this.setState({ w: minWidth });
   }
 
@@ -486,7 +491,10 @@ export default class Chart extends Component {
 
     let minHeight = (this.baseHeight * minHeightModifier) - paddingInHeight;
 
+    this.rowSpan = minHeightModifier;
+
     this.setState({ h: minHeight });
+
   }
 
   _checkPositionInRowAndColumn(overlappedCells) {
@@ -569,9 +577,12 @@ export default class Chart extends Component {
   _style() {
     return {
       postion: 'absolute',
+      // border: '2px solid white',
+      // backgroundColor: '#4C99E8',
+      backgroundColor: '#d9edf7',
       border: '2px solid white',
-      backgroundColor: '#4C99E8',
       opacity: '.97',
+      // opacity: '1',
       width: '100%',
       height: '100%',
       borderRadius: '30px',
@@ -583,7 +594,9 @@ export default class Chart extends Component {
     return {
       postion: 'absolute',
       border: '2px solid white',
-      backgroundColor: 'yellow',
+      // backgroundColor: 'yellow',
+      // backgroundColor: '#dff0d8',
+      backgroundColor: '#337ab7',
       opacity: '.97',
       width: '100%',
       height: '100%',
@@ -640,6 +653,7 @@ export default class Chart extends Component {
         }}
         onResizeStop={(e, direction, ref, delta, position) => {
           this._checkResizeOverlap(e, delta);
+
         }}
         enableResizing={{
           bottom: true,

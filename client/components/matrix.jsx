@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Chart from './chart.jsx';
 import Row from './row.jsx';
 import ActionButton from './button.jsx';
+import { add_row, add_col, add_chart, remove_chart } from '../core_api.jsx';
 
 export default class Matrix extends Component {
   constructor(props) {
@@ -15,8 +16,12 @@ export default class Matrix extends Component {
       columnCount: this.props.columnCount,
       rowCount: this.props.rowCount
     };
+    this.hasRendered = false;
     this.columnLimit = 8;
     this.rowLimit = 6;
+    this.slideID = this.props.slideID;
+    this.domainPrefix = this.props.domainPrefix;
+    this.userID = this.props.userID;
 
     this.addChart = this.addChart.bind(this);
     this.addColumn = this.addColumn.bind(this);
@@ -32,6 +37,11 @@ export default class Matrix extends Component {
     this._findPositionInColumn = this._findPositionInColumn.bind(this);
     this._getCellRect = this._getCellRect.bind(this);
     this._swapChartId = this._swapChartId.bind(this);
+  }
+
+  componentDidMount() {
+    this.hasRendered = true;
+    this.renderCharts();
   }
 
   updateCellLocations() {
@@ -78,6 +88,8 @@ export default class Matrix extends Component {
     this.setState({ charts });
     this.setState({ chartList });
 
+    add_chart(this.domainPrefix,this.slideID,cellId,this.userID);
+
     const chartId = highestId + 1;
     return { chartId };
   }
@@ -112,6 +124,9 @@ export default class Matrix extends Component {
       });
     }
     this.updateCellLocations();
+
+    add_col(this.domainPrefix,this.slideID);
+
   }
 
   addRow() {
@@ -155,6 +170,8 @@ export default class Matrix extends Component {
     }
 
     this.updateCellLocations();
+
+    add_row(this.domainPrefix,this.slideID);
 
   }
 
@@ -209,6 +226,8 @@ export default class Matrix extends Component {
     delete charts[chartId];
     indexOfChartId = chartList.indexOf(chartId);
     chartList.splice(indexOfChartId, 1);
+
+    remove_chart(this.domainPrefix,chartToDelete.objectID,this.userID);
 
     this.setState({ charts });
     this.setState({ chartList });
@@ -322,6 +341,7 @@ export default class Matrix extends Component {
           columnCount={this.state.columnCount}
           addChart={this.addChart}
           swapChartId={this._swapChartId}
+          objectID={chartInfo.objectID}
         />
       );
     })
@@ -337,11 +357,11 @@ export default class Matrix extends Component {
         />
         <ActionButton
           style={'button__addColumn'}
-          buttonText={'Add Column'}
+          buttonText={'Add Col'}
           buttonAction={this.addColumn}
         />
         { this.renderRows() }
-        { this.renderCharts() }
+        { this.hasRendered ? this.renderCharts() : null }
       </div>
     );
   }

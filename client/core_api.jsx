@@ -62,7 +62,7 @@ export function add_col(domain_prefix, slide_id) {
     });
 }
 
-export function add_chart(domain_prefix, slide_id, cell_id, user_id) {
+export function add_chart(callback, domain_prefix, slide_id, cell_id, new_chart_id, user_id) {
     $.ajax({
         url : "http://" + domain_prefix + "/ajax_matrix_add_chart", // the endpoint
         type : "POST", // http method
@@ -72,6 +72,7 @@ export function add_chart(domain_prefix, slide_id, cell_id, user_id) {
 
         // handle a successful response
         success : function(json) {
+            callback(new_chart_id,json.new_chart_id);
             console.log("Added chart");
         },
 

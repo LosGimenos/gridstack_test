@@ -24,6 +24,7 @@ export default class Matrix extends Component {
     this.userID = this.props.userID;
 
     this.addChart = this.addChart.bind(this);
+    this.setChartObjectId = this.setChartObjectId.bind(this);
     this.addColumn = this.addColumn.bind(this);
     this.addRow = this.addRow.bind(this);
     this.setStartingDOMLocation = this.setStartingDOMLocation.bind(this);
@@ -84,14 +85,22 @@ export default class Matrix extends Component {
     chartList.push(highestId + 1);
     cells[cellId]['canAddChart'] = false;
 
+    const newChartId = highestId + 1;
+    add_chart(this.setChartObjectId,this.domainPrefix,this.slideID,cellId,newChartId,this.userID);
+
     this.setState({ cells });
     this.setState({ charts });
     this.setState({ chartList });
 
-    add_chart(this.domainPrefix,this.slideID,cellId,this.userID);
-
     const chartId = highestId + 1;
     return { chartId };
+  }
+
+  // Callback to add backend objectId to chart once ajax call has completed
+  setChartObjectId(newChartId,objectId) {
+    const charts = this.state.charts;
+    charts[newChartId]['objectID'] = objectId;
+    this.setState({ charts })
   }
 
   addCell(rowId) {
@@ -223,11 +232,12 @@ export default class Matrix extends Component {
     let indexOfChartId;
     let chartToDelete = charts[chartId];
 
+    const current_chart = charts[chartId];
+    remove_chart(this.domainPrefix,current_chart.objectID,this.userID);
+
     delete charts[chartId];
     indexOfChartId = chartList.indexOf(chartId);
     chartList.splice(indexOfChartId, 1);
-
-    remove_chart(this.domainPrefix,chartToDelete.objectID,this.userID);
 
     this.setState({ charts });
     this.setState({ chartList });

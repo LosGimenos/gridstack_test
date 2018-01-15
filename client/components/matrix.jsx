@@ -105,14 +105,10 @@ export default class Matrix extends Component {
   setChartObjectId(newChartId,objectId,cells,charts,chartList) {
     // const charts = this.state.charts;
     // const chartList = this.state.chartList;
-    console.log("Setting chart object id");
-    console.log(objectId);
     charts[newChartId]['objectID'] = objectId;
-    console.log(charts[newChartId]['objectID']);
     this.setState({ charts });
     this.setState({ chartList });
     this.setState({ cells });
-    console.log(charts[newChartId]['objectID']);
   }
 
   addCell(rowId) {
@@ -324,6 +320,7 @@ export default class Matrix extends Component {
       let startingHeight;
 
       if (chartInfo.startingColumnSpan != 1) {
+        startingColumnSpan = chartInfo.startingColumnSpan;
         const width = this._getCellRect(chartInfo.startingCell).width;
         const paddingInWidth = width * .13
 
@@ -333,6 +330,7 @@ export default class Matrix extends Component {
       }
 
       if (chartInfo.startingRowSpan != 1) {
+        startingRowSpan = chartInfo.startingRowSpan;
         const height = this._getCellRect(chartInfo.startingCell).height;
         const paddingInHeight = height * .08;
 

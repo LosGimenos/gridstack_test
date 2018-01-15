@@ -28,8 +28,8 @@ export default class Chart extends Component {
 
     this.objectID = this.props.objectID;
     this.domainPrefix = this.props.domainPrefix;
-    this.rowSpan = 1;
-    this.colSpan = 1;
+    this.rowSpan = this.props.startingRowSpan;
+    this.colSpan = this.props.startingColumnSpan;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -654,23 +654,16 @@ export default class Chart extends Component {
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
         onDragStop={(e, d) => {
           this.state.onCloneDrag ? this._checkCloneOverlap(e) : this._checkForOverlap(e);
-          console.log(this.originCell);
-          console.log(this.rowSpan);
-          console.log(this.colSpan);
-          console.log(this.objectID);
           if (e['target']['className'] == "chart") {
             refresh_chart_position(this.domainPrefix,this.objectID,this.originCell,this.rowSpan,this.colSpan);
           }
-          this.setState({ onCloneDrag: false })
+          this.setState({onCloneDrag: false})
         }}
         onResizeStart={(e, direction, ref, delta, position) => {
           this._startResizeEvent(ref);
         }}
         onResizeStop={(e, direction, ref, delta, position) => {
           this._checkResizeOverlap(e, delta);
-          console.log(this.originCell);
-          console.log(this.rowSpan);
-          console.log(this.colSpan);
           refresh_chart_position(this.domainPrefix,this.objectID,this.originCell,this.rowSpan,this.colSpan);
         }}
         enableResizing={{

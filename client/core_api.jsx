@@ -3,7 +3,7 @@ import $ from 'jquery';
 
 export function get_initial_matrix_state(callback, domain_prefix, slide_id, user_id) {
     $.ajax({
-        url : "http://" + domain_prefix + "/ajax_matrix_get_initial_state", // the endpoint
+        url : "https://" + domain_prefix + "/ajax_matrix_get_initial_state", // the endpoint
         type : "POST", // http method
         data : { slide_id : slide_id },
 
@@ -24,7 +24,7 @@ export function get_initial_matrix_state(callback, domain_prefix, slide_id, user
 
 export function add_row(domain_prefix, slide_id) {
     $.ajax({
-        url : "http://" + domain_prefix + "/ajax_matrix_add_row", // the endpoint
+        url : "https://" + domain_prefix + "/ajax_matrix_add_row", // the endpoint
         type : "POST", // http method
         data : { slide_id : slide_id },
 
@@ -44,7 +44,7 @@ export function add_row(domain_prefix, slide_id) {
 
 export function add_col(domain_prefix, slide_id) {
     $.ajax({
-        url : "http://" + domain_prefix + "/ajax_matrix_add_col", // the endpoint
+        url : "https://" + domain_prefix + "/ajax_matrix_add_col", // the endpoint
         type : "POST", // http method
         data : { slide_id : slide_id },
 
@@ -64,7 +64,7 @@ export function add_col(domain_prefix, slide_id) {
 
 export function add_chart(callback, domain_prefix, slide_id, cell_id, new_chart_id, user_id,cells,charts,chartList) {
     $.ajax({
-        url : "http://" + domain_prefix + "/ajax_matrix_add_chart", // the endpoint
+        url : "https://" + domain_prefix + "/ajax_matrix_add_chart", // the endpoint
         type : "POST", // http method
         data : { slide_id : slide_id,
                  cell_id : cell_id,
@@ -87,7 +87,7 @@ export function add_chart(callback, domain_prefix, slide_id, cell_id, new_chart_
 
 export function remove_chart(domain_prefix, chart_id, user_id) {
     $.ajax({
-        url : "http://" + domain_prefix + "/ajax_matrix_remove_chart", // the endpoint
+        url : "https://" + domain_prefix + "/ajax_matrix_remove_chart", // the endpoint
         type : "POST", // http method
         data : { chart_id : chart_id,
                  user_id : user_id },
@@ -108,7 +108,7 @@ export function remove_chart(domain_prefix, chart_id, user_id) {
 
 export function refresh_chart_position(domain_prefix, chart_id, origin_cell, height, width) {
     $.ajax({
-        url : "http://" + domain_prefix + "/ajax_matrix_refresh_chart_position", // the endpoint
+        url : "https://" + domain_prefix + "/ajax_matrix_refresh_chart_position", // the endpoint
         type : "POST", // http method
         data : { chart_id : chart_id,
                  origin_cell : origin_cell,
@@ -131,7 +131,7 @@ export function refresh_chart_position(domain_prefix, chart_id, origin_cell, hei
 
 export function replicate_chart(callback, domain_prefix, slide_id, cell_id, original_object_id, new_chart_id, user_id,cells,charts,chartList) {
     $.ajax({
-        url : "http://" + domain_prefix + "/ajax_matrix_replicate_chart", // the endpoint
+        url : "https://" + domain_prefix + "/ajax_matrix_replicate_chart", // the endpoint
         type : "POST", // http method
         data : { slide_id : slide_id,
                  original_object_id : original_object_id,

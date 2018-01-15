@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Chart from './chart.jsx';
 import Row from './row.jsx';
 import ActionButton from './button.jsx';
-import { add_row, add_col, add_chart, remove_chart } from '../core_api.jsx';
+import { add_row, add_col, add_chart, remove_chart, replicate_chart } from '../core_api.jsx';
 
 export default class Matrix extends Component {
   constructor(props) {
@@ -59,7 +59,7 @@ export default class Matrix extends Component {
     this.setState({ cells });
   }
 
-  addChart(cellId, row=1, column=1, clonedTo=null) {
+  addChart(cellId, row=1, column=1, clonedTo=null, originalObjectId=null) {
     let highestId;
     const chartList = this.state.chartList;
     const charts = this.state.charts;
@@ -86,21 +86,33 @@ export default class Matrix extends Component {
     cells[cellId]['canAddChart'] = false;
 
     const newChartId = highestId + 1;
-    add_chart(this.setChartObjectId,this.domainPrefix,this.slideID,cellId,newChartId,this.userID);
 
-    this.setState({ cells });
-    this.setState({ charts });
-    this.setState({ chartList });
+    if (clonedTo) {
+      replicate_chart(this.setChartObjectId, this.domainPrefix, this.slideID, cellId, originalObjectId, newChartId, this.userID, cells, charts, chartList);
+    }
+    else {
+      add_chart(this.setChartObjectId, this.domainPrefix, this.slideID, cellId, newChartId, this.userID, cells, charts, chartList);
+    }
+    // this.setState({ cells });
+    // this.setState({ charts });
+    // this.setState({ chartList });
 
     const chartId = highestId + 1;
     return { chartId };
   }
 
   // Callback to add backend objectId to chart once ajax call has completed
-  setChartObjectId(newChartId,objectId) {
-    const charts = this.state.charts;
+  setChartObjectId(newChartId,objectId,cells,charts,chartList) {
+    // const charts = this.state.charts;
+    // const chartList = this.state.chartList;
+    console.log("Setting chart object id");
+    console.log(objectId);
     charts[newChartId]['objectID'] = objectId;
-    this.setState({ charts })
+    console.log(charts[newChartId]['objectID']);
+    this.setState({ charts });
+    this.setState({ chartList });
+    this.setState({ cells });
+    console.log(charts[newChartId]['objectID']);
   }
 
   addCell(rowId) {
@@ -132,9 +144,9 @@ export default class Matrix extends Component {
         return {columnCount: prevState.columnCount + 1};
       });
     }
-    this.updateCellLocations();
 
     add_col(this.domainPrefix,this.slideID);
+    this.updateCellLocations();
 
   }
 
@@ -178,9 +190,8 @@ export default class Matrix extends Component {
       this.setState({ rowCount: this.state.rowCount + 1 });
     }
 
-    this.updateCellLocations();
-
     add_row(this.domainPrefix,this.slideID);
+    this.updateCellLocations();
 
   }
 
@@ -233,7 +244,9 @@ export default class Matrix extends Component {
     let chartToDelete = charts[chartId];
 
     const current_chart = charts[chartId];
-    remove_chart(this.domainPrefix,current_chart.objectID,this.userID);
+    if (current_chart.objectID) {
+        remove_chart(this.domainPrefix, current_chart.objectID, this.userID);
+    }
 
     delete charts[chartId];
     indexOfChartId = chartList.indexOf(chartId);
@@ -352,6 +365,7 @@ export default class Matrix extends Component {
           addChart={this.addChart}
           swapChartId={this._swapChartId}
           objectID={chartInfo.objectID}
+          domainPrefix={this.domainPrefix}
         />
       );
     })

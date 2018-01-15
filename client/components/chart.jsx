@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import Rnd from 'react-rnd';
 import matrixSizeModifiers from '../matrixSizeModifiers.js';
+import { refresh_chart_position } from '../core_api.jsx';
 
 export default class Chart extends Component {
   constructor(props) {
@@ -13,7 +14,9 @@ export default class Chart extends Component {
       h: this.props.startingHeight,
       columnCount: this.props.columnCount,
       rowCount: this.props.rowCount,
-      onCloneDrag: false
+      onCloneDrag: false,
+      // rowSpan: this.props.startingRowSpan,
+      // colSpan: this.props.startingColumnSpan,
     };
     this.id = this.props.id;
     this.originCell = this.props.originCell;
@@ -22,9 +25,11 @@ export default class Chart extends Component {
     this.baseHeight = this.props.getCellRect(this.props.originCell).height;
     this.heightCorrected = true;
     this.clonedChartId = null;
-    this.rowSpan = 0;
-    this.colSpan = 0;
+
     this.objectID = this.props.objectID;
+    this.domainPrefix = this.props.domainPrefix;
+    this.rowSpan = 1;
+    this.colSpan = 1;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -47,6 +52,7 @@ export default class Chart extends Component {
       this.setState({ rowCount: nextProps.rowCount });
       this.heightCorrected = false;
     }
+
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -458,6 +464,7 @@ export default class Chart extends Component {
 
     let minWidth = (this.baseWidth * minWidthModifier) - paddingInWidth;
 
+    // this.setState({ colSpan: minWidthModifier });
     this.colSpan = minWidthModifier;
 
     this.setState({ w: minWidth });
@@ -491,6 +498,7 @@ export default class Chart extends Component {
 
     let minHeight = (this.baseHeight * minHeightModifier) - paddingInHeight;
 
+    // this.setState({ rowSpan: minHeightModifier });
     this.rowSpan = minHeightModifier;
 
     this.setState({ h: minHeight });
@@ -568,7 +576,7 @@ export default class Chart extends Component {
     this._startDragEvent(e);
 
     const { columns, rows } = this._checkPositionInRowAndColumn(this.originCells);
-    const { chartId } = this.props.addChart(this.originCell, rows, columns, true);
+    const { chartId } = this.props.addChart(this.originCell, rows, columns, true, this.objectID);
     this.props.swapChartId(chartId, this.id);
     this.id = this.props.id;
     this.clonedChartId = chartId;
@@ -646,6 +654,13 @@ export default class Chart extends Component {
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
         onDragStop={(e, d) => {
           this.state.onCloneDrag ? this._checkCloneOverlap(e) : this._checkForOverlap(e);
+          console.log(this.originCell);
+          console.log(this.rowSpan);
+          console.log(this.colSpan);
+          console.log(this.objectID);
+          if (e['target']['className'] == "chart") {
+            refresh_chart_position(this.domainPrefix,this.objectID,this.originCell,this.rowSpan,this.colSpan);
+          }
           this.setState({ onCloneDrag: false })
         }}
         onResizeStart={(e, direction, ref, delta, position) => {
@@ -653,7 +668,10 @@ export default class Chart extends Component {
         }}
         onResizeStop={(e, direction, ref, delta, position) => {
           this._checkResizeOverlap(e, delta);
-
+          console.log(this.originCell);
+          console.log(this.rowSpan);
+          console.log(this.colSpan);
+          refresh_chart_position(this.domainPrefix,this.objectID,this.originCell,this.rowSpan,this.colSpan);
         }}
         enableResizing={{
           bottom: true,

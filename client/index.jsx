@@ -7,12 +7,19 @@ import { get_initial_matrix_state } from './core_api.jsx';
 
 //Ajax call to get state info
 var slide_id = $('#slide-id').val();
-var domain_prefix = $('#domain-prefix').val();
-var user_id = $('#user-id').val();
 if (slide_id == null){
-    var domain_prefix = '127.0.0.1:8000';
+    var domain_prefix = 'http://127.0.0.1:8000';
     var slide_id = 55;
     var user_id = 2;
+}
+else {
+    if ($('#domain-prefix').val() == '127.0.0.1:8000'){
+        var domain_prefix = 'http://' + $('#domain-prefix').val();
+    }
+    else {
+        var domain_prefix = 'https://' + $('#domain-prefix').val();
+    }
+    var user_id = $('#user-id').val();
 }
 
 function renderInitialMatrix(json,domain_prefix,slide_id,user_id) {

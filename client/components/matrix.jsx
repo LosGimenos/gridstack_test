@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Chart from './chart.jsx';
 import Row from './row.jsx';
 import ActionButton from './button.jsx';
-import { add_row, add_col, add_chart, remove_chart, replicate_chart } from '../core_api.jsx';
+import { add_row, add_col, add_chart, remove_chart, replicate_chart, refreshChartList } from '../core_api.jsx';
 
 export default class Matrix extends Component {
   constructor(props) {
@@ -109,6 +109,7 @@ export default class Matrix extends Component {
     this.setState({ charts });
     this.setState({ chartList });
     this.setState({ cells });
+    refreshChartList();
   }
 
   addCell(rowId) {

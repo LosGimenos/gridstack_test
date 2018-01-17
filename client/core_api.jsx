@@ -72,7 +72,7 @@ export function add_chart(callback, domain_prefix, slide_id, cell_id, new_chart_
 
         // handle a successful response
         success : function(json) {
-            callback(new_chart_id,json.new_object_id,cells,charts,chartList);
+            callback(new_chart_id,json.new_object_id,json.new_chart_name,cells,charts,chartList);
             console.log("Added chart");
         },
 
@@ -141,7 +141,7 @@ export function replicate_chart(callback, domain_prefix, slide_id, cell_id, orig
 
         // handle a successful response
         success : function(json) {
-            callback(new_chart_id,json.new_object_id,cells,charts,chartList);
+            callback(new_chart_id,json.new_object_id,json.new_chart_name,cells,charts,chartList);
             console.log("Replicated chart");
         },
 
@@ -162,17 +162,11 @@ export function refreshChartList() {
     }
     else {
         console.log("Refreshing chart list");
-        if ($('#domain-prefix').val() == '127.0.0.1:8000') {
-            var domain_prefix = 'http://' + $('#domain-prefix').val();
-        }
-        else {
-            var domain_prefix = 'https://' + $('#domain-prefix').val();
-        }
         var presentation_id = $('#presentation-id').val();
         var user_id = $('#user-id').val();
 
         $.ajax({
-            url: "/ajax_configuration_refresh_chart_list", // the endpoint
+            url: "/ajax_matrix_refresh_chart_list", // the endpoint
             type: "POST", // http method
             data: {
                 slide_id: slide_id,
@@ -193,4 +187,74 @@ export function refreshChartList() {
             }
         });
     }
+}
+
+export function endEditName(e,chart_id) {
+    console.log(chart_id);
+    var currentName = $(e.target).prev().text();
+    var input = $(e.target),
+        label = input && input.prev(),
+        newName = input.val();
+    var domain_prefix = $('#domain-prefix').val();
+    if (domain_prefix == null) {
+        domain_prefix = 'http://127.0.0.1:8000';
+    }
+
+    if (newName != currentName){
+        $.ajax({
+            url: domain_prefix + "/ajax_matrix_update_chart_name", // the endpoint
+            type: "POST", // http method
+            data: {
+                chart_id: chart_id,
+                new_name: newName
+            },
+
+            // handle a successful response
+            success: function (data) {
+                console.log("Refreshed chart list");
+                $('#slide-charts-chart-list').html(data);
+            },
+
+            // handle a non-successful response
+            error: function (xhr, errmsg, err) {
+                // $('#error-messages').html("<div class='alert alert-danger'>Oops! We have encountered an error: "+errmsg+
+                //     "</div>"); // add the error to the dom
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+    }
+
+    label.text(newName === '' ? currentName : newName);
+    input.hide();
+    label.show();
+}
+
+export function handleKeyup(e,chart_id) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13) || (e.which && e.which == 27) || (e.keyCode && e.keyCode == 27)) {
+        endEditName(e,chart_id);
+        return false;
+    } else {
+        return true;
+    }
+}
+
+export function handleClickToEdit(e) {
+    e.persist();
+    var dragging = 0;
+    $(document).mousemove(function(){
+       dragging = 1;
+    });
+    $(document).mouseup(function(){
+        if (!dragging){
+            var currentName = $(e.target).text();
+            $(e.target).hide();
+            $(e.target).next().show().focus();
+            $(e.target).next().val(currentName);
+            e.stopPropagation();
+        }
+    });
+}
+
+export function turnOffDraggingForChart(e) {
+    e.stopPropagation();
 }

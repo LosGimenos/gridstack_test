@@ -102,10 +102,11 @@ export default class Matrix extends Component {
   }
 
   // Callback to add backend objectId to chart once ajax call has completed
-  setChartObjectId(newChartId,objectId,cells,charts,chartList) {
+  setChartObjectId(newChartId,objectId,chartName,cells,charts,chartList) {
     // const charts = this.state.charts;
     // const chartList = this.state.chartList;
     charts[newChartId]['objectID'] = objectId;
+    charts[newChartId]['chartName'] = chartName;
     this.setState({ charts });
     this.setState({ chartList });
     this.setState({ cells });
@@ -364,6 +365,7 @@ export default class Matrix extends Component {
           addChart={this.addChart}
           swapChartId={this._swapChartId}
           objectID={chartInfo.objectID}
+          chartName={chartInfo.chartName}
           domainPrefix={this.domainPrefix}
         />
       );

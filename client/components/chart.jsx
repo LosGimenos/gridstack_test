@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import Rnd from 'react-rnd';
 import matrixSizeModifiers from '../matrixSizeModifiers.js';
-import { refresh_chart_position } from '../core_api.jsx';
+import { refresh_chart_position, endEditName, handleKeyup, handleClickToEdit, turnOffDraggingForChart } from '../core_api.jsx';
 
 export default class Chart extends Component {
   constructor(props) {
@@ -27,6 +27,7 @@ export default class Chart extends Component {
     this.clonedChartId = null;
 
     this.objectID = this.props.objectID;
+    this.chartName = this.props.chartName;
     this.domainPrefix = this.props.domainPrefix;
     this.rowSpan = this.props.startingRowSpan;
     this.colSpan = this.props.startingColumnSpan;
@@ -654,6 +655,7 @@ export default class Chart extends Component {
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
         onDragStop={(e, d) => {
           this.state.onCloneDrag ? this._checkCloneOverlap(e) : this._checkForOverlap(e);
+          console.log(e);
           if (e['target']['className'] == "chart") {
             refresh_chart_position(this.domainPrefix,this.objectID,this.originCell,this.rowSpan,this.colSpan);
           }
@@ -684,12 +686,17 @@ export default class Chart extends Component {
           style={this.state.onCloneDrag ? this._cloneDragStyle() : this._style()}
           name={this.id}
           >
+          <span className={'chart-name-info'}>
           <button
             className="button__cell--clear"
             onClick={(e) => {
               this._clearChart(e);
             }}><p className='not-selectable'>x</p></button>
-          <span><p className="not-selectable">id: { this.id }</p></span>
+          <label className="chart-name-label" onMouseDown={handleClickToEdit}>{ this.chartName }</label>
+          <input className="chart-name-input" onBlur={(e) => endEditName(e,this.objectID)}
+                 onKeyUp={(e) => handleKeyup(e,this.objectID)} onMouseDown={turnOffDraggingForChart} type="text" />
+          {/*<span><p className="not-selectable">id: { this.id }</p></span>*/}
+          </span>
         </div>
       </Rnd>
     );

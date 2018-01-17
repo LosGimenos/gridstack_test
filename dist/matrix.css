@@ -154,3 +154,36 @@ div[id^='__resizable'], div[id*='__resizable'] {
 button:focus {
   outline: 0;
 }
+
+.chart-name-info {
+  height: 100%;
+}
+
+.chart-name-label {
+  font-weight: normal;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.chart-name-label:hover {
+  /*font-weight: bold;*/
+  cursor:pointer;
+     /*color:blue;*/
+     /*text-decoration:underline;*/
+  /*background: #e5e5e5;*/
+  border:1px solid;
+  border-color:grey;
+  border-radius:2px;
+  padding:2px 4px;
+}
+
+.chart-name-input {
+  outline: none;
+  border:1px solid;
+  border-color:#4d90fe;
+  display:none;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}

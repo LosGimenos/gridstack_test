@@ -42,6 +42,9 @@ export default class Matrix extends Component {
     this._findPositionInColumn = this._findPositionInColumn.bind(this);
     this._getCellRect = this._getCellRect.bind(this);
     this._swapChartId = this._swapChartId.bind(this);
+    this._swapLocation = this._swapLocation.bind(this);
+    this._resetCloneStatus = this._resetCloneStatus.bind(this);
+    this._getStartingCell = this._getStartingCell.bind(this);
   }
 
   updateCellLocations() {
@@ -263,6 +266,36 @@ export default class Matrix extends Component {
     this.setState({ charts });
   }
 
+  _getStartingCell(chartId) {
+    const charts = this.state.charts;
+    const startingCellToSwap = charts[chartId]['startingCell'];
+
+    return startingCellToSwap;
+  }
+
+  _swapLocation(x, y, cloneId, originCell, originCells) {
+    const charts = this.state.charts;
+
+    charts[cloneId]['startingX'] = x;
+    charts[cloneId]['startingY'] = y;
+    charts[cloneId]['startingCell'] = originCell;
+    charts[cloneId]['originCells'] = originCells;
+
+    charts[cloneId]['cloned'] = true;
+
+    this.setState({ charts });
+    console.log('swap fired', charts, cloneId)
+  }
+
+  _resetCloneStatus(cloneId) {
+    const charts = this.state.charts;
+
+    delete charts[cloneId]['cloned']
+
+    this.setState({ charts });
+    console.log(charts, 'reset');
+  }
+
   renderRows() {
     const rowArray = this.state.rowList;
     return rowArray.map((row, index) => {
@@ -285,7 +318,7 @@ export default class Matrix extends Component {
     return this.state.chartList.map((chartId, index) => {
       const chartInfo = this.state.charts[chartId];
       const originCell = chartInfo['startingCell'];
-      const { x, y } = this._getDOMLocationOfCell(originCell);
+      let { x, y } = this._getDOMLocationOfCell(originCell);
       let startingColumnSpan = 1;
       let startingRowSpan = 1;
       let startingWidth;
@@ -309,11 +342,18 @@ export default class Matrix extends Component {
         startingHeight = (this._getCellRect(chartInfo.startingCell).height * chartInfo.startingRowSpan) * .91;
       }
 
+      if (chartInfo.cloned) {
+        console.log('clone changed')
+        x = chartInfo.startingX;
+        y = chartInfo.startingY;
+      }
+
       return (
         <Chart
           key={chartId}
           id={chartInfo.id}
           originCell={chartInfo.startingCell}
+          originCells={chartInfo.originCells}
           startingX={x}
           startingY={y}
           startingWidth={startingWidth}
@@ -332,12 +372,17 @@ export default class Matrix extends Component {
           columnCount={this.state.columnCount}
           addChart={this.addChart}
           swapChartId={this._swapChartId}
+          swapLocation={this._swapLocation}
+          cloned={chartInfo.cloned}
+          resetCloneStatus={this._resetCloneStatus}
+          getStartingCell={this._getStartingCell}
         />
       );
     })
   }
 
   render() {
+    console.log(this.state)
     return (
       <div className='matrix'>
         <ActionButton

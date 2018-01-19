@@ -92,6 +92,7 @@ export default class Matrix extends Component {
     this.setState({ chartList });
 
     const chartId = highestId + 1;
+
     return { chartId };
   }
 
@@ -284,7 +285,6 @@ export default class Matrix extends Component {
     charts[cloneId]['cloned'] = true;
 
     this.setState({ charts });
-    console.log('swap fired', charts, cloneId)
   }
 
   _resetCloneStatus(cloneId) {
@@ -293,7 +293,6 @@ export default class Matrix extends Component {
     delete charts[cloneId]['cloned']
 
     this.setState({ charts });
-    console.log(charts, 'reset');
   }
 
   renderRows() {
@@ -343,7 +342,6 @@ export default class Matrix extends Component {
       }
 
       if (chartInfo.cloned) {
-        console.log('clone changed')
         x = chartInfo.startingX;
         y = chartInfo.startingY;
       }
@@ -382,7 +380,6 @@ export default class Matrix extends Component {
   }
 
   render() {
-    console.log(this.state)
     return (
       <div className='matrix'>
         <ActionButton

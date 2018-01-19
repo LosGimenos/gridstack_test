@@ -54,9 +54,9 @@ export default class Chart extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.rowCount != this.state.rowCount && !this.heightCorrected) {
-      let { width, height, top, left } = this.props.getCellRect(this.originCell);
+    const { width, height, top, left } = this.props.getCellRect(this.originCell);
 
+    if (prevProps.rowCount != this.state.rowCount && !this.heightCorrected) {
       const chartWidthDifference = this.state.w * this._getCellSizeDifference(this.baseWidth, width);
       const chartHeightDifference = this.state.h * this._getCellSizeDifference(this.baseHeight, height);
 
@@ -72,6 +72,12 @@ export default class Chart extends Component {
       this.baseWidth = width;
       this.baseHeight = height;
     }
+
+    if (prevState.y != top || prevState.x != left) {
+      this.setState({ y: top });
+      this.setState({ x: left });
+    }
+
   }
 
   _getCellSizeDifference(baseCellSize, newCellSize) {
@@ -218,8 +224,6 @@ export default class Chart extends Component {
     }
     const anchorCell = Math.min.apply(null, overlappedCells);
     this.originCell = anchorCell;
-    console.log(this.originCells, this.originCell, 'end drag OCS')
-    console.log(overlappedCells, 'overlapped cells end drag')
   }
 
   _checkForDefaultSize() {
@@ -413,7 +417,6 @@ export default class Chart extends Component {
       }
     })
     this.originCells = overlappedCells;
-    console.log(this.originCells, 'OC from start drag');
   }
 
   _startResizeEvent(e) {
@@ -625,10 +628,6 @@ export default class Chart extends Component {
     })
   }
 
-  _callToDb() {
-
-  }
-
   // deprecated modifiers for responsive scaling.
 // - (this.baseWidth * matrixSizeModifiers['columns'][this.state.columnCount])
 // - (this.baseHeight * matrixSizeModifiers['rows'][this.state.rowCount])
@@ -645,7 +644,6 @@ export default class Chart extends Component {
     let newXPosition = this.state.x - containerRect.x;
     let newYPosition = this.state.y - containerRect.y;
 
-    console.log(this.state, 'chart state', this.id, this.originCells)
     return (
       <Rnd
         size={{ width: this.state.w, height: this.state.h }}
@@ -678,6 +676,10 @@ export default class Chart extends Component {
           top: false,
           topLeft: false,
           topRight: false
+        }}
+        resizeHandleStyles={{
+          right: {'width': '15%'},
+          bottom: {'height': '15%'}
         }}
         z={this.state.onCloneDrag ? 100 : 1}
         bounds={'parent'}

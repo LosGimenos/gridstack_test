@@ -4,8 +4,6 @@ let matrixSizeModifier;
 const windowWidth = window.innerWidth;
 const windowHeight = window.innerHeight;
 
-console.log(windowHeight, windowWidth)
-
 matrixSizeModifier = {
   'columns': {
     1: .35,

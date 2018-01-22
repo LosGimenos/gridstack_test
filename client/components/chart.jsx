@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import Rnd from 'react-rnd';
 import matrixSizeModifiers from '../matrixSizeModifiers.js';
-import { refresh_chart_position, endEditName, handleKeyup, handleClickToEdit, turnOffDraggingForChart } from '../core_api.jsx';
+import { refresh_chart_position, endEditName, handleKeyup, handleClickToEdit, turnOffDraggingForChart, goToChart } from '../core_api.jsx';
 
 export default class Chart extends Component {
   constructor(props) {
@@ -685,6 +685,7 @@ export default class Chart extends Component {
           className={'chart'}
           style={this.state.onCloneDrag ? this._cloneDragStyle() : this._style()}
           name={this.id}
+          onDoubleClick={() => goToChart(this.domainPrefix,this.objectID)}
           >
           <span className={'chart-name-info'}>
           <button

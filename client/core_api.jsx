@@ -261,3 +261,25 @@ export function handleClickToEdit(e) {
 export function turnOffDraggingForChart(e) {
     e.stopPropagation();
 }
+
+export function goToChart(domain_prefix, chart_id) {
+    $.ajax({
+        url : domain_prefix + "/ajax_matrix_get_chart_parent_info", // the endpoint
+        type : "POST", // http method
+        data : { chart_id : chart_id },
+
+        // handle a successful response
+        success : function(json) {
+            var redirect_url = "/visualize/powerpoint/chart/" + json.presentation_id + "/" + json.slide_id + "/" + chart_id;
+            window.location.href = redirect_url;
+            console.log("double click redirect")
+        },
+
+        // handle a non-successful response
+        error : function(xhr,errmsg,err) {
+            // $('#error-messages').html("<div class='alert alert-danger'>Oops! We have encountered an error: "+errmsg+
+            //     "</div>"); // add the error to the dom
+            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+        }
+    });
+}

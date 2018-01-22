@@ -2,33 +2,29 @@ import React, { Component } from 'react';
 import Chart from './chart.jsx';
 import Row from './row.jsx';
 import ActionButton from './button.jsx';
+import { add_row, add_col, add_chart, remove_chart, replicate_chart, refreshChartList } from '../core_api.jsx';
 
 export default class Matrix extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      cells: {
-        '11': {
-          id: 11,
-          canAddChart: true
-        }
-      },
-      chartList: [],
-      charts: {},
-      rows: {
-        '1': {
-          id: 1,
-          cellsInRow: [11]
-        }
-      },
-      rowList: [1],
-      columnCount: 1,
-      rowCount: 1
+      cells: this.props.cells,
+      chartList: this.props.chartList,
+      charts: this.props.charts,
+      rows: this.props.rows,
+      rowList: this.props.rowList,
+      columnCount: this.props.columnCount,
+      rowCount: this.props.rowCount
     };
+    this.hasRendered = false;
     this.columnLimit = 8;
     this.rowLimit = 6;
+    this.slideID = this.props.slideID;
+    this.domainPrefix = this.props.domainPrefix;
+    this.userID = this.props.userID;
 
     this.addChart = this.addChart.bind(this);
+    this.setChartObjectId = this.setChartObjectId.bind(this);
     this.addColumn = this.addColumn.bind(this);
     this.addRow = this.addRow.bind(this);
     this.setStartingDOMLocation = this.setStartingDOMLocation.bind(this);
@@ -42,6 +38,14 @@ export default class Matrix extends Component {
     this._findPositionInColumn = this._findPositionInColumn.bind(this);
     this._getCellRect = this._getCellRect.bind(this);
     this._swapChartId = this._swapChartId.bind(this);
+    this._swapLocation = this._swapLocation.bind(this);
+    this._resetCloneStatus = this._resetCloneStatus.bind(this);
+    this._getStartingCell = this._getStartingCell.bind(this);
+  }
+
+  componentDidMount() {
+    this.hasRendered = true;
+    this.renderCharts();
   }
 
   updateCellLocations() {
@@ -58,7 +62,7 @@ export default class Matrix extends Component {
     this.setState({ cells });
   }
 
-  addChart(cellId, row=1, column=1, clonedTo=null) {
+  addChart(cellId, row=1, column=1, clonedTo=null, originalObjectId=null) {
     let highestId;
     const chartList = this.state.chartList;
     const charts = this.state.charts;
@@ -84,12 +88,32 @@ export default class Matrix extends Component {
     chartList.push(highestId + 1);
     cells[cellId]['canAddChart'] = false;
 
-    this.setState({ cells });
-    this.setState({ charts });
-    this.setState({ chartList });
+    const newChartId = highestId + 1;
+
+    if (clonedTo) {
+      replicate_chart(this.setChartObjectId, this.domainPrefix, this.slideID, cellId, originalObjectId, newChartId, this.userID, cells, charts, chartList);
+    }
+    else {
+      add_chart(this.setChartObjectId, this.domainPrefix, this.slideID, cellId, newChartId, this.userID, cells, charts, chartList);
+    }
+    // this.setState({ cells });
+    // this.setState({ charts });
+    // this.setState({ chartList });
 
     const chartId = highestId + 1;
     return { chartId };
+  }
+
+  // Callback to add backend objectId to chart once ajax call has completed
+  setChartObjectId(newChartId,objectId,chartName,cells,charts,chartList) {
+    // const charts = this.state.charts;
+    // const chartList = this.state.chartList;
+    charts[newChartId]['objectID'] = objectId;
+    charts[newChartId]['chartName'] = chartName;
+    this.setState({ charts });
+    this.setState({ chartList });
+    this.setState({ cells });
+    refreshChartList();
   }
 
   addCell(rowId) {
@@ -121,7 +145,10 @@ export default class Matrix extends Component {
         return {columnCount: prevState.columnCount + 1};
       });
     }
+
+    add_col(this.domainPrefix,this.slideID);
     this.updateCellLocations();
+
   }
 
   addRow() {
@@ -164,6 +191,7 @@ export default class Matrix extends Component {
       this.setState({ rowCount: this.state.rowCount + 1 });
     }
 
+    add_row(this.domainPrefix,this.slideID);
     this.updateCellLocations();
 
   }
@@ -216,6 +244,11 @@ export default class Matrix extends Component {
     let indexOfChartId;
     let chartToDelete = charts[chartId];
 
+    const current_chart = charts[chartId];
+    if (current_chart.objectID) {
+        remove_chart(this.domainPrefix, current_chart.objectID, this.userID);
+    }
+
     delete charts[chartId];
     indexOfChartId = chartList.indexOf(chartId);
     chartList.splice(indexOfChartId, 1);
@@ -263,6 +296,34 @@ export default class Matrix extends Component {
     this.setState({ charts });
   }
 
+  _getStartingCell(chartId) {
+    const charts = this.state.charts;
+    const startingCellToSwap = charts[chartId]['startingCell'];
+
+    return startingCellToSwap;
+  }
+
+  _swapLocation(x, y, cloneId, originCell, originCells) {
+    const charts = this.state.charts;
+
+    charts[cloneId]['startingX'] = x;
+    charts[cloneId]['startingY'] = y;
+    charts[cloneId]['startingCell'] = originCell;
+    charts[cloneId]['originCells'] = originCells;
+
+    charts[cloneId]['cloned'] = true;
+
+    this.setState({ charts });
+  }
+
+  _resetCloneStatus(cloneId) {
+    const charts = this.state.charts;
+
+    delete charts[cloneId]['cloned']
+
+    this.setState({ charts });
+  }
+
   renderRows() {
     const rowArray = this.state.rowList;
     return rowArray.map((row, index) => {
@@ -292,6 +353,7 @@ export default class Matrix extends Component {
       let startingHeight;
 
       if (chartInfo.startingColumnSpan != 1) {
+        startingColumnSpan = chartInfo.startingColumnSpan;
         const width = this._getCellRect(chartInfo.startingCell).width;
         const paddingInWidth = width * .13
 
@@ -301,6 +363,7 @@ export default class Matrix extends Component {
       }
 
       if (chartInfo.startingRowSpan != 1) {
+        startingRowSpan = chartInfo.startingRowSpan;
         const height = this._getCellRect(chartInfo.startingCell).height;
         const paddingInHeight = height * .08;
 
@@ -309,11 +372,17 @@ export default class Matrix extends Component {
         startingHeight = (this._getCellRect(chartInfo.startingCell).height * chartInfo.startingRowSpan) * .91;
       }
 
+      if (chartInfo.cloned) {
+        x = chartInfo.startingX;
+        y = chartInfo.startingY;
+      }
+
       return (
         <Chart
           key={chartId}
           id={chartInfo.id}
           originCell={chartInfo.startingCell}
+          originCells={chartInfo.originCells}
           startingX={x}
           startingY={y}
           startingWidth={startingWidth}
@@ -332,6 +401,13 @@ export default class Matrix extends Component {
           columnCount={this.state.columnCount}
           addChart={this.addChart}
           swapChartId={this._swapChartId}
+          swapLocation={this._swapLocation}
+          cloned={chartInfo.cloned}
+          resetCloneStatus={this._resetCloneStatus}
+          getStartingCell={this._getStartingCell}
+          objectID={chartInfo.objectID}
+          chartName={chartInfo.chartName}
+          domainPrefix={this.domainPrefix}
         />
       );
     })
@@ -347,11 +423,11 @@ export default class Matrix extends Component {
         />
         <ActionButton
           style={'button__addColumn'}
-          buttonText={'Add Column'}
+          buttonText={'Add Col'}
           buttonAction={this.addColumn}
         />
         { this.renderRows() }
-        { this.renderCharts() }
+        { this.hasRendered ? this.renderCharts() : null }
       </div>
     );
   }

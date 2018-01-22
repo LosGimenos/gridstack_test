@@ -197,7 +197,7 @@ export function endEditName(e,chart_id) {
         newName = input.val();
     var domain_prefix = $('#domain-prefix').val();
     if (domain_prefix == null) {
-        domain_prefix = 'http://127.0.0.1:8000';
+        domain_prefix = 'https://pangea-staging.herokuapp.com';
     }
     else {
         domain_prefix = 'https://' + domain_prefix;

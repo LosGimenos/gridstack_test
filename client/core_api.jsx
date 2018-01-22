@@ -199,6 +199,9 @@ export function endEditName(e,chart_id) {
     if (domain_prefix == null) {
         domain_prefix = 'http://127.0.0.1:8000';
     }
+    else {
+        domain_prefix = 'http://' + domain_prefix;
+    }
 
     if (newName != currentName){
         $.ajax({
@@ -211,8 +214,8 @@ export function endEditName(e,chart_id) {
 
             // handle a successful response
             success: function (data) {
-                console.log("Refreshed chart list");
-                $('#slide-charts-chart-list').html(data);
+                console.log("Updated chart name");
+                refreshChartList();
             },
 
             // handle a non-successful response

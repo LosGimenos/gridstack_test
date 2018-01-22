@@ -54,12 +54,19 @@ export default class Chart extends Component {
       this.heightCorrected = false;
     }
 
+    if (nextProps.cloned && nextProps.x != this.state.x || nextProps.cloned && nextProps.y != this.state.y) {
+      this.originCell = nextProps.originCell;
+      this.originCells = nextProps.originCells;
+      this.props.resetCloneStatus(this.id);
+      this._resetPosition(nextProps.startingX, nextProps.startingY);
+    }
+
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.rowCount != this.state.rowCount && !this.heightCorrected) {
-      let { width, height, top, left } = this.props.getCellRect(this.originCell);
+    const { width, height, top, left } = this.props.getCellRect(this.originCell);
 
+    if (prevProps.rowCount != this.state.rowCount && !this.heightCorrected) {
       const chartWidthDifference = this.state.w * this._getCellSizeDifference(this.baseWidth, width);
       const chartHeightDifference = this.state.h * this._getCellSizeDifference(this.baseHeight, height);
 
@@ -74,6 +81,11 @@ export default class Chart extends Component {
 
       this.baseWidth = width;
       this.baseHeight = height;
+    }
+
+    if (prevState.y != top || prevState.x != left) {
+      this.setState({ y: top });
+      this.setState({ x: left });
     }
   }
 
@@ -164,6 +176,11 @@ export default class Chart extends Component {
         }
       }
     })
+
+    // chart must be same size as cells it collides with
+    if (overlappedCells.length > this.originCells.length) {
+      return;
+    }
 
     if (!onOccupiedCell && overlappedCells.length >= 2 && this._checkForDefaultSize()) {
       return;
@@ -354,17 +371,22 @@ export default class Chart extends Component {
           this._clearClonedChartOnError();
           return;
         }
-        const { x, y } = this.props.getDOMLocationOfCell(anchorCell);
-        this._resetPosition(x,y);
+        let { x, y } = this.props.getDOMLocationOfCell(anchorCell);
+        const cloneStartingCell = this.props.getStartingCell(this.clonedChartId);
+        this.props.swapLocation(x, y, this.clonedChartId, anchorCell, this.originCells);
+
+        const cloneStartingCellLocation = this.props.getDOMLocationOfCell(cloneStartingCell);
+        const cloneLocationX = cloneStartingCellLocation['x'];
+        const cloneLocationY = cloneStartingCellLocation['y'];
+        this._resetPosition(cloneLocationX, cloneLocationY);
         const { onOccupiedCellOnRelocate, overlappedCellsOnRelocate } = this._checkCollision(x, y);
 
         overlappedCellsOnRelocate.forEach((cell) => {
           if (!this._checkIsOriginCell(cell, this.originCells)) {
             this.props.occupyCell(cell);
           }
-
-          this.originCell = anchorCell;
         })
+        this.originCell = cloneStartingCell;
       } catch(err) {
         this._clearClonedChartOnError();
         return;
@@ -540,46 +562,13 @@ export default class Chart extends Component {
     return columnsAndRows;
   }
 
-  _cloneChart(e) {
-    const clonedChartLocation = [];
-    const { columns, rows } = this._checkPositionInRowAndColumn(this.originCells);
-    let onOccupiedCell = false;
-    let noCellExists = false;
-
-    this.originCells.forEach((cell) => {
-      const potentialCell = parseInt(cell) + columns;
-      clonedChartLocation.push(potentialCell);
-      let isOccupied;
-      try {
-        isOccupied = this.props.isOccupied(potentialCell);
-      } catch (err) {
-        noCellExists = true;
-      }
-
-      if (isOccupied) {
-        onOccupiedCell = true;
-      }
-    })
-
-    if (onOccupiedCell || noCellExists) {
-      return;
-    } else {
-      const anchorCell = Math.min.apply(0, clonedChartLocation);
-      this.props.addChart(anchorCell, rows, columns);
-      clonedChartLocation.forEach((cell) => {
-        this.props.occupyCell(cell);
-      })
-    }
-  }
-
   _copyChart(e) {
     this.setState({ onCloneDrag: true });
     this._startDragEvent(e);
 
     const { columns, rows } = this._checkPositionInRowAndColumn(this.originCells);
     const { chartId } = this.props.addChart(this.originCell, rows, columns, true, this.objectID);
-    this.props.swapChartId(chartId, this.id);
-    this.id = this.props.id;
+
     this.clonedChartId = chartId;
   }
 
@@ -620,10 +609,6 @@ export default class Chart extends Component {
     this.originCells.forEach((cell) => {
       this.props.unoccupyCell(cell);
     })
-  }
-
-  _callToDb() {
-
   }
 
   // deprecated modifiers for responsive scaling.
@@ -677,6 +662,10 @@ export default class Chart extends Component {
           top: false,
           topLeft: false,
           topRight: false
+        }}
+        resizeHandleStyles={{
+          right: {'width': '15%'},
+          bottom: {'height': '15%'}
         }}
         z={this.state.onCloneDrag ? 100 : 1}
         bounds={'parent'}

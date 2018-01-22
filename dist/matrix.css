@@ -2,6 +2,10 @@ div[id^='__resizable'], div[id*='__resizable'] {
   display: none;
 }
 
+.__resizable_base {
+  display: none;
+}
+
 .chart {
   margin: 0;
   padding: 0;

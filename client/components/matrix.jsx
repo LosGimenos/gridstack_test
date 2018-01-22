@@ -346,7 +346,7 @@ export default class Matrix extends Component {
     return this.state.chartList.map((chartId, index) => {
       const chartInfo = this.state.charts[chartId];
       const originCell = chartInfo['startingCell'];
-      const { x, y } = this._getDOMLocationOfCell(originCell);
+      let { x, y } = this._getDOMLocationOfCell(originCell);
       let startingColumnSpan = 1;
       let startingRowSpan = 1;
       let startingWidth;

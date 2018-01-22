@@ -664,8 +664,8 @@ export default class Chart extends Component {
           topRight: false
         }}
         resizeHandleStyles={{
-          right: {'width': '15%'},
-          bottom: {'height': '15%'}
+          right: {'width': '20px'},
+          bottom: {'height': '20px'}
         }}
         z={this.state.onCloneDrag ? 100 : 1}
         bounds={'parent'}

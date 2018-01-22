@@ -200,7 +200,7 @@ export function endEditName(e,chart_id) {
         domain_prefix = 'http://127.0.0.1:8000';
     }
     else {
-        domain_prefix = 'http://' + domain_prefix;
+        domain_prefix = 'https://' + domain_prefix;
     }
 
     if (newName != currentName){

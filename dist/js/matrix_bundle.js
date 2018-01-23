@@ -60,7 +60,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "3c5079b6cebe773deec5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "8d9a473cc6acd11f45bc"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -37275,6 +37275,7 @@ var Matrix = function (_Component) {
     _this._swapLocation = _this._swapLocation.bind(_this);
     _this._resetCloneStatus = _this._resetCloneStatus.bind(_this);
     _this._getStartingCell = _this._getStartingCell.bind(_this);
+    _this._setErrorOnClone = _this._setErrorOnClone.bind(_this);
     return _this;
   }
 
@@ -37590,6 +37591,15 @@ var Matrix = function (_Component) {
       this.setState({ charts: charts });
     }
   }, {
+    key: '_setErrorOnClone',
+    value: function _setErrorOnClone(cloneId) {
+      var charts = this.state.charts;
+
+      charts[cloneId]['errorOnClone'] = true;
+
+      this.setState({ charts: charts });
+    }
+  }, {
     key: 'renderRows',
     value: function renderRows() {
       var _this3 = this;
@@ -37679,6 +37689,8 @@ var Matrix = function (_Component) {
           cloned: chartInfo.cloned,
           resetCloneStatus: _this4._resetCloneStatus,
           getStartingCell: _this4._getStartingCell,
+          errorOnClone: chartInfo.errorOnClone,
+          setErrorOnClone: _this4._setErrorOnClone,
           objectID: chartInfo.objectID,
           clonedObjectId: chartInfo.clonedObjectId,
           chartName: chartInfo.chartName,
@@ -37777,6 +37789,8 @@ var Chart = function (_Component) {
     _this.baseWidth = _this.props.getCellRect(_this.props.originCell).width;
     _this.baseHeight = _this.props.getCellRect(_this.props.originCell).height;
     _this.heightCorrected = true;
+    _this.clonedChartId = null;
+    _this.errorOnClone = _this.props.errorOnClone;
 
     _this.objectID = _this.props.objectID;
     _this.clonedObjectId = _this.props.clonedObjectId;
@@ -37825,6 +37839,10 @@ var Chart = function (_Component) {
       if (nextProps.clonedObjectId != this.clonedObjectId || nextProps.clonedOriginCell != this.clonedOriginCell) {
         this.clonedObjectId = nextProps.clonedObjectId;
         this.clonedOriginCell = nextProps.clonedOriginCell;
+      }
+
+      if (!this.chartName && nextProps.chartName) {
+        this.chartName = nextProps.chartName;
       }
     }
   }, {
@@ -38107,15 +38125,35 @@ var Chart = function (_Component) {
       this.originCell = anchorCell;
     }
   }, {
+    key: '_staggerClonedChartDelete',
+    value: function _staggerClonedChartDelete(clonedChartId) {
+      var _this5 = this;
+
+      var renderedClonedChart = document.getElementsByName(clonedChartId)[0];
+
+      if (renderedClonedChart) {
+        this._clearClonedChartOnError();
+      } else {
+        this.props.setErrorOnClone(clonedChartId);
+        var chartDeleteInterval = setInterval(function () {
+          renderedClonedChart = document.getElementsByName(clonedChartId)[0];
+          if (renderedClonedChart) {
+            _this5._clearClonedChartOnError();
+            clearInterval(chartDeleteInterval);
+          }
+        }, 1300);
+      }
+    }
+  }, {
     key: '_checkCloneOverlap',
     value: function _checkCloneOverlap(e) {
-      var _this5 = this;
+      var _this6 = this;
 
       var chart = e.target;
       var chartLocation = void 0;
 
       if (chart.tagName == 'HTML' || chart.tagName == 'document' || chart.tagName == 'BUTTON') {
-        this._clearClonedChartOnError();
+        this._staggerClonedChartDelete(this.clonedChartId);
         return;
       }
 
@@ -38126,7 +38164,7 @@ var Chart = function (_Component) {
       try {
         chartLocation = chart.getBoundingClientRect();
       } catch (err) {
-        this._clearClonedChartOnError;
+        this._staggerClonedChartDelete(this.clonedChartId);
         return;
       }
 
@@ -38141,7 +38179,7 @@ var Chart = function (_Component) {
         if (overlap) {
           var cellId = cell.getAttribute('name');
           overlappedCells.push(cellId);
-          var isOccupied = _this5.props.isOccupied(cellId);
+          var isOccupied = _this6.props.isOccupied(cellId);
 
           if (isOccupied) {
             onOccupiedCell = true;
@@ -38150,7 +38188,7 @@ var Chart = function (_Component) {
       });
 
       if (onOccupiedCell) {
-        this._clearClonedChartOnError();
+        this._staggerClonedChartDelete(this.clonedChartId);
         return;
       } else {
         try {
@@ -38158,7 +38196,7 @@ var Chart = function (_Component) {
           var anchorCell = Math.min.apply(null, overlappedCells);
 
           if (!this._checkAvailableMatrixSize(anchorCell)) {
-            this._clearClonedChartOnError();
+            this._staggerClonedChartDelete(this.clonedChartId);
             return;
           }
 
@@ -38179,13 +38217,13 @@ var Chart = function (_Component) {
               overlappedCellsOnRelocate = _checkCollision3.overlappedCellsOnRelocate;
 
           overlappedCellsOnRelocate.forEach(function (cell) {
-            if (!_this5._checkIsOriginCell(cell, _this5.originCells)) {
-              _this5.props.occupyCell(cell);
+            if (!_this6._checkIsOriginCell(cell, _this6.originCells)) {
+              _this6.props.occupyCell(cell);
             }
           });
           this.originCell = cloneStartingCell;
         } catch (err) {
-          this._clearClonedChartOnError();
+          this._staggerClonedChartDelete(this.clonedChartId);
           return;
         }
       }
@@ -38381,6 +38419,19 @@ var Chart = function (_Component) {
       this.clonedChartId = chartId;
     }
   }, {
+    key: '_setChartStyle',
+    value: function _setChartStyle() {
+      var chartStyle = void 0;
+      if (this.errorOnClone) {
+        chartStyle = {
+          display: 'none'
+        };
+      } else {
+        this.state.onCloneDrag ? chartStyle = this._cloneDragStyle() : chartStyle = this._style();
+      }
+      return chartStyle;
+    }
+  }, {
     key: '_style',
     value: function _style() {
       return {
@@ -38416,12 +38467,12 @@ var Chart = function (_Component) {
   }, {
     key: '_clearChart',
     value: function _clearChart(e) {
-      var _this6 = this;
+      var _this7 = this;
 
       var chartIdToRemove = this.id;
       this.props.removeChart(chartIdToRemove);
       this.originCells.forEach(function (cell) {
-        _this6.props.unoccupyCell(cell);
+        _this7.props.unoccupyCell(cell);
       });
     }
 
@@ -38432,7 +38483,7 @@ var Chart = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this7 = this;
+      var _this8 = this;
 
       var matrix = document.querySelector('.matrix');
       var cell = document.getElementsByName(this.originCell)[0];
@@ -38457,24 +38508,28 @@ var Chart = function (_Component) {
 
           },
           onDragStart: function onDragStart(e, d) {
-            !e.shiftKey ? _this7._startDragEvent(e) : _this7._copyChart(e);
+            if (_this8.errorOnClone) {
+              return false;
+            } else {
+              !e.shiftKey ? _this8._startDragEvent(e) : _this8._copyChart(e);
+            }
           },
           onDragStop: function onDragStop(e, d) {
-            _this7.state.onCloneDrag ? _this7._checkCloneOverlap(e) : _this7._checkForOverlap(e);
+            _this8.state.onCloneDrag ? _this8._checkCloneOverlap(e) : _this8._checkForOverlap(e);
             if (e['target']['className'] == "chart") {
-              if (_this7.clonedObjectId) {
-                (0, _core_api.refresh_chart_position)(_this7.domainPrefix, _this7.clonedObjectId, _this7.clonedOriginCell, _this7.rowSpan, _this7.colSpan);
+              if (_this8.clonedObjectId) {
+                (0, _core_api.refresh_chart_position)(_this8.domainPrefix, _this8.clonedObjectId, _this8.clonedOriginCell, _this8.rowSpan, _this8.colSpan);
               }
-              (0, _core_api.refresh_chart_position)(_this7.domainPrefix, _this7.objectID, _this7.originCell, _this7.rowSpan, _this7.colSpan);
+              (0, _core_api.refresh_chart_position)(_this8.domainPrefix, _this8.objectID, _this8.originCell, _this8.rowSpan, _this8.colSpan);
             }
-            _this7.setState({ onCloneDrag: false });
+            _this8.setState({ onCloneDrag: false });
           },
           onResizeStart: function onResizeStart(e, direction, ref, delta, position) {
-            _this7._startResizeEvent(ref);
+            _this8._startResizeEvent(ref);
           },
           onResizeStop: function onResizeStop(e, direction, ref, delta, position) {
-            _this7._checkResizeOverlap(e, delta);
-            (0, _core_api.refresh_chart_position)(_this7.domainPrefix, _this7.objectID, _this7.originCell, _this7.rowSpan, _this7.colSpan);
+            _this8._checkResizeOverlap(e, delta);
+            (0, _core_api.refresh_chart_position)(_this8.domainPrefix, _this8.objectID, _this8.originCell, _this8.rowSpan, _this8.colSpan);
           },
           enableResizing: {
             bottom: true,
@@ -38497,10 +38552,10 @@ var Chart = function (_Component) {
           'div',
           {
             className: 'chart',
-            style: this.state.onCloneDrag ? this._cloneDragStyle() : this._style(),
+            style: this._setChartStyle(),
             name: this.id,
             onDoubleClick: function onDoubleClick() {
-              return (0, _core_api.goToChart)(_this7.domainPrefix, _this7.objectID);
+              return (0, _core_api.goToChart)(_this8.domainPrefix, _this8.objectID);
             }
           },
           _react2.default.createElement(
@@ -38511,7 +38566,7 @@ var Chart = function (_Component) {
               {
                 className: 'button__cell--clear',
                 onClick: function onClick(e) {
-                  _this7._clearChart(e);
+                  _this8._clearChart(e);
                 } },
               _react2.default.createElement(
                 'p',
@@ -38525,10 +38580,10 @@ var Chart = function (_Component) {
               this.chartName
             ),
             _react2.default.createElement('input', { className: 'chart-name-input', onBlur: function onBlur(e) {
-                return (0, _core_api.endEditName)(e, _this7.objectID);
+                return (0, _core_api.endEditName)(e, _this8.objectID);
               },
               onKeyUp: function onKeyUp(e) {
-                return (0, _core_api.handleKeyup)(e, _this7.objectID);
+                return (0, _core_api.handleKeyup)(e, _this8.objectID);
               }, onMouseDown: _core_api.turnOffDraggingForChart, type: 'text' })
           )
         )

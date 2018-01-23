@@ -42,6 +42,7 @@ export default class Matrix extends Component {
     this._swapLocation = this._swapLocation.bind(this);
     this._resetCloneStatus = this._resetCloneStatus.bind(this);
     this._getStartingCell = this._getStartingCell.bind(this);
+    this._setErrorOnClone = this._setErrorOnClone.bind(this);
   }
 
   componentDidMount() {
@@ -324,6 +325,14 @@ export default class Matrix extends Component {
     this.setState({ charts });
   }
 
+  _setErrorOnClone(cloneId) {
+    const charts = this.state.charts;
+
+    charts[cloneId]['errorOnClone'] = true;
+
+    this.setState({ charts });
+  }
+
   renderRows() {
     const rowArray = this.state.rowList;
     return rowArray.map((row, index) => {
@@ -406,6 +415,8 @@ export default class Matrix extends Component {
           cloned={chartInfo.cloned}
           resetCloneStatus={this._resetCloneStatus}
           getStartingCell={this._getStartingCell}
+          errorOnClone={chartInfo.errorOnClone}
+          setErrorOnClone={this._setErrorOnClone}
           objectID={chartInfo.objectID}
           clonedObjectId={chartInfo.clonedObjectId}
           chartName={chartInfo.chartName}

@@ -25,6 +25,7 @@ export default class Chart extends Component {
     this.baseHeight = this.props.getCellRect(this.props.originCell).height;
     this.heightCorrected = true;
     this.clonedChartId = null;
+    this.errorOnClone = this.props.errorOnClone;
 
     this.objectID = this.props.objectID;
     this.chartName = this.props.chartName;
@@ -55,12 +56,18 @@ export default class Chart extends Component {
     }
 
     if (nextProps.cloned && nextProps.x != this.state.x || nextProps.cloned && nextProps.y != this.state.y) {
+      console.log(nextProps, 'this is next props')
       this.originCell = nextProps.originCell;
       this.originCells = nextProps.originCells;
+      this.chartName = nextProps.chartName;
       this.props.resetCloneStatus(this.id);
       this._resetPosition(nextProps.startingX, nextProps.startingY);
+      console.log('clone swap', this.originCells)
     }
 
+    if (!this.chartName && nextProps.chartName) {
+      this.chartName = nextProps.chartName;
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -316,12 +323,31 @@ export default class Chart extends Component {
     this.originCell = anchorCell;
   }
 
+  _staggerClonedChartDelete(clonedChartId) {
+    let renderedClonedChart = document.getElementsByName(clonedChartId)[0];
+
+    if (renderedClonedChart) {
+      this._clearClonedChartOnError();
+    } else {
+      this.props.setErrorOnClone(clonedChartId);
+      const chartDeleteInterval = setInterval(() => {
+        renderedClonedChart = document.getElementsByName(clonedChartId)[0];
+        if ( renderedClonedChart ) {
+          this._clearClonedChartOnError();
+          clearInterval(chartDeleteInterval);
+        }
+      }, 1300);
+    }
+  }
+
   _checkCloneOverlap(e) {
     let chart = e.target;
     let chartLocation;
 
     if (chart.tagName == 'HTML' || chart.tagName == 'document' || chart.tagName == 'BUTTON') {
-      this._clearClonedChartOnError();
+      console.log('this error triggered')
+      this._staggerClonedChartDelete(this.clonedChartId);
+      // this._clearClonedChartOnError();
       return;
     }
 
@@ -360,7 +386,7 @@ export default class Chart extends Component {
     })
 
     if (onOccupiedCell) {
-      this._clearClonedChartOnError();
+      this._staggerClonedChartDelete(this.clonedChartId);
       return;
     } else {
       try {
@@ -373,7 +399,7 @@ export default class Chart extends Component {
         }
         let { x, y } = this.props.getDOMLocationOfCell(anchorCell);
         const cloneStartingCell = this.props.getStartingCell(this.clonedChartId);
-        this.props.swapLocation(x, y, this.clonedChartId, anchorCell, this.originCells);
+        this.props.swapLocation(x, y, this.clonedChartId, anchorCell, overlappedCells);
 
         const cloneStartingCellLocation = this.props.getDOMLocationOfCell(cloneStartingCell);
         const cloneLocationX = cloneStartingCellLocation['x'];
@@ -563,6 +589,7 @@ export default class Chart extends Component {
   }
 
   _copyChart(e) {
+    console.log(this.id, 'copy chart id')
     this.setState({ onCloneDrag: true });
     this._startDragEvent(e);
 
@@ -570,6 +597,19 @@ export default class Chart extends Component {
     const { chartId } = this.props.addChart(this.originCell, rows, columns, true, this.objectID);
 
     this.clonedChartId = chartId;
+  }
+
+  _setChartStyle() {
+    let chartStyle;
+    if ( this.errorOnClone ) {
+      chartStyle = {
+        display: 'none',
+      }
+      // this.setState({ x: -1000 });
+    } else {
+      this.state.onCloneDrag ? chartStyle = this._cloneDragStyle() : chartStyle = this._style()
+    }
+    return chartStyle;
   }
 
   _style() {
@@ -637,7 +677,14 @@ export default class Chart extends Component {
           // + (cell.offsetHeight / 32)
 
         }}
-        onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
+        onDragStart={(e, d) => {
+          if ( this.errorOnClone ) {
+            console.log('error on clone');
+            return false;
+          } else {
+            !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e)
+          }
+        }}
         onDragStop={(e, d) => {
           this.state.onCloneDrag ? this._checkCloneOverlap(e) : this._checkForOverlap(e);
           console.log(e);
@@ -672,7 +719,7 @@ export default class Chart extends Component {
       >
         <div
           className={'chart'}
-          style={this.state.onCloneDrag ? this._cloneDragStyle() : this._style()}
+          style={this._setChartStyle()}
           name={this.id}
           onDoubleClick={() => goToChart(this.domainPrefix,this.objectID)}
           >

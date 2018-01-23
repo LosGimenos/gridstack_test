@@ -41,6 +41,7 @@ export default class Matrix extends Component {
     this._swapLocation = this._swapLocation.bind(this);
     this._resetCloneStatus = this._resetCloneStatus.bind(this);
     this._getStartingCell = this._getStartingCell.bind(this);
+    this._setErrorOnClone = this._setErrorOnClone.bind(this);
   }
 
   componentDidMount() {
@@ -106,6 +107,7 @@ export default class Matrix extends Component {
 
   // Callback to add backend objectId to chart once ajax call has completed
   setChartObjectId(newChartId,objectId,chartName,cells,charts,chartList) {
+    console.log(charts);
     // const charts = this.state.charts;
     // const chartList = this.state.chartList;
     charts[newChartId]['objectID'] = objectId;
@@ -324,6 +326,14 @@ export default class Matrix extends Component {
     this.setState({ charts });
   }
 
+  _setErrorOnClone(cloneId) {
+    const charts = this.state.charts;
+
+    charts[cloneId]['errorOnClone'] = true;
+
+    this.setState({ charts });
+  }
+
   renderRows() {
     const rowArray = this.state.rowList;
     return rowArray.map((row, index) => {
@@ -346,6 +356,7 @@ export default class Matrix extends Component {
     return this.state.chartList.map((chartId, index) => {
       const chartInfo = this.state.charts[chartId];
       const originCell = chartInfo['startingCell'];
+      const originCells = chartInfo['originCells'];
       let { x, y } = this._getDOMLocationOfCell(originCell);
       let startingColumnSpan = 1;
       let startingRowSpan = 1;
@@ -381,8 +392,8 @@ export default class Matrix extends Component {
         <Chart
           key={chartId}
           id={chartInfo.id}
-          originCell={chartInfo.startingCell}
-          originCells={chartInfo.originCells}
+          originCell={originCell}
+          originCells={originCells}
           startingX={x}
           startingY={y}
           startingWidth={startingWidth}
@@ -405,6 +416,8 @@ export default class Matrix extends Component {
           cloned={chartInfo.cloned}
           resetCloneStatus={this._resetCloneStatus}
           getStartingCell={this._getStartingCell}
+          errorOnClone={chartInfo.errorOnClone}
+          setErrorOnClone={this._setErrorOnClone}
           objectID={chartInfo.objectID}
           chartName={chartInfo.chartName}
           domainPrefix={this.domainPrefix}

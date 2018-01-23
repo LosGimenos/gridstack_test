@@ -19,14 +19,16 @@ export default class Chart extends Component {
       // colSpan: this.props.startingColumnSpan,
     };
     this.id = this.props.id;
+    this.clonedChartId = null;
     this.originCell = this.props.originCell;
+    this.clonedOriginCell = this.props.clonedOriginCell;
     this.originCells = [this.originCell];
     this.baseWidth = this.props.getCellRect(this.props.originCell).width;
     this.baseHeight = this.props.getCellRect(this.props.originCell).height;
     this.heightCorrected = true;
-    this.clonedChartId = null;
 
     this.objectID = this.props.objectID;
+    this.clonedObjectId = this.props.clonedObjectId;
     this.chartName = this.props.chartName;
     this.domainPrefix = this.props.domainPrefix;
     this.rowSpan = this.props.startingRowSpan;
@@ -61,6 +63,9 @@ export default class Chart extends Component {
       this._resetPosition(nextProps.startingX, nextProps.startingY);
     }
 
+    this.clonedObjectId = nextProps.clonedObjectId;
+    this.clonedOriginCell = nextProps.clonedOriginCell;
+
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -87,6 +92,9 @@ export default class Chart extends Component {
       this.setState({ y: top });
       this.setState({ x: left });
     }
+
+    // this.setState({ y: top });
+
   }
 
   _getCellSizeDifference(baseCellSize, newCellSize) {
@@ -373,7 +381,7 @@ export default class Chart extends Component {
         }
         let { x, y } = this.props.getDOMLocationOfCell(anchorCell);
         const cloneStartingCell = this.props.getStartingCell(this.clonedChartId);
-        this.props.swapLocation(x, y, this.clonedChartId, anchorCell, this.originCells);
+        this.props.swapLocation(x, y, this.clonedChartId, anchorCell, overlappedCells, this.id);
 
         const cloneStartingCellLocation = this.props.getDOMLocationOfCell(cloneStartingCell);
         const cloneLocationX = cloneStartingCellLocation['x'];
@@ -567,9 +575,10 @@ export default class Chart extends Component {
     this._startDragEvent(e);
 
     const { columns, rows } = this._checkPositionInRowAndColumn(this.originCells);
-    const { chartId } = this.props.addChart(this.originCell, rows, columns, true, this.objectID);
+    const { chartId } = this.props.addChart(this.originCell, rows, columns, true, this.objectID, this.id);
 
     this.clonedChartId = chartId;
+
   }
 
   _style() {
@@ -640,8 +649,10 @@ export default class Chart extends Component {
         onDragStart={(e, d) => { !e.shiftKey ? this._startDragEvent(e) : this._copyChart(e) }}
         onDragStop={(e, d) => {
           this.state.onCloneDrag ? this._checkCloneOverlap(e) : this._checkForOverlap(e);
-          console.log(e);
           if (e['target']['className'] == "chart") {
+            if (this.clonedObjectId) {
+              refresh_chart_position(this.domainPrefix,this.clonedObjectId,this.clonedOriginCell,this.rowSpan,this.colSpan);
+            }
             refresh_chart_position(this.domainPrefix,this.objectID,this.originCell,this.rowSpan,this.colSpan);
           }
           this.setState({onCloneDrag: false})

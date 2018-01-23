@@ -63,8 +63,10 @@ export default class Chart extends Component {
       this._resetPosition(nextProps.startingX, nextProps.startingY);
     }
 
-    this.clonedObjectId = nextProps.clonedObjectId;
-    this.clonedOriginCell = nextProps.clonedOriginCell;
+    if (nextProps.clonedObjectId != this.clonedObjectId || nextProps.clonedOriginCell != this.clonedOriginCell) {
+      this.clonedObjectId = nextProps.clonedObjectId;
+      this.clonedOriginCell = nextProps.clonedOriginCell;
+    }
 
   }
 

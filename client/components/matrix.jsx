@@ -108,7 +108,7 @@ export default class Matrix extends Component {
     charts[newChartId]['chartName'] = chartName;
     if (isClone) {
       charts[originalChartId]['clonedObjectId'] = objectId;
-      charts[originalChartId]['clonedOriginCell'] = charts[newChartId]['startingCell'];
+      // charts[originalChartId]['clonedOriginCell'] = charts[newChartId]['startingCell'];
     }
     this.setState({ charts });
     this.setState({ chartList });

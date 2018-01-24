@@ -60,7 +60,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "8d9a473cc6acd11f45bc"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "e26df5257c26c7845b59"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -37276,6 +37276,7 @@ var Matrix = function (_Component) {
     _this._resetCloneStatus = _this._resetCloneStatus.bind(_this);
     _this._getStartingCell = _this._getStartingCell.bind(_this);
     _this._setErrorOnClone = _this._setErrorOnClone.bind(_this);
+    _this._resetOriginalChartStatus = _this._resetOriginalChartStatus.bind(_this);
     return _this;
   }
 
@@ -37591,6 +37592,16 @@ var Matrix = function (_Component) {
       this.setState({ charts: charts });
     }
   }, {
+    key: '_resetOriginalChartStatus',
+    value: function _resetOriginalChartStatus(chartId) {
+      var charts = this.state.charts;
+
+      charts[chartId]['clonedOriginCell'] = null;
+      charts[chartId]['clonedObjectId'] = null;
+
+      this.setState({ charts: charts });
+    }
+  }, {
     key: '_setErrorOnClone',
     value: function _setErrorOnClone(cloneId) {
       var charts = this.state.charts;
@@ -37691,6 +37702,7 @@ var Matrix = function (_Component) {
           getStartingCell: _this4._getStartingCell,
           errorOnClone: chartInfo.errorOnClone,
           setErrorOnClone: _this4._setErrorOnClone,
+          resetOriginalChartStatus: _this4._resetOriginalChartStatus,
           objectID: chartInfo.objectID,
           clonedObjectId: chartInfo.clonedObjectId,
           chartName: chartInfo.chartName,
@@ -37843,6 +37855,10 @@ var Chart = function (_Component) {
 
       if (!this.chartName && nextProps.chartName) {
         this.chartName = nextProps.chartName;
+      }
+
+      if (!this.objectID && nextProps.objectID) {
+        this.objectID = nextProps.objectID;
       }
     }
   }, {
@@ -38137,11 +38153,12 @@ var Chart = function (_Component) {
         this.props.setErrorOnClone(clonedChartId);
         var chartDeleteInterval = setInterval(function () {
           renderedClonedChart = document.getElementsByName(clonedChartId)[0];
-          if (renderedClonedChart) {
+          if (renderedClonedChart.querySelector('.chart-name-label').textContent) {
+            console.log(renderedClonedChart.querySelector('.chart-name-label').textContent);
             _this5._clearClonedChartOnError();
             clearInterval(chartDeleteInterval);
           }
-        }, 1300);
+        }, 50);
       }
     }
   }, {
@@ -38432,6 +38449,11 @@ var Chart = function (_Component) {
       return chartStyle;
     }
   }, {
+    key: '_resetOriginalChartInMatrix',
+    value: function _resetOriginalChartInMatrix(chartId) {
+      this.props.resetOriginalChartStatus(chartId);
+    }
+  }, {
     key: '_style',
     value: function _style() {
       return {
@@ -38517,9 +38539,14 @@ var Chart = function (_Component) {
           onDragStop: function onDragStop(e, d) {
             _this8.state.onCloneDrag ? _this8._checkCloneOverlap(e) : _this8._checkForOverlap(e);
             if (e['target']['className'] == "chart") {
-              if (_this8.clonedObjectId) {
+              if (_this8.clonedObjectId && _this8.clonedOriginCell) {
+                // console.log(this.clonedObjectId, this.clonedOriginCell, 'clone stuff')
                 (0, _core_api.refresh_chart_position)(_this8.domainPrefix, _this8.clonedObjectId, _this8.clonedOriginCell, _this8.rowSpan, _this8.colSpan);
+                _this8._resetOriginalChartInMatrix(_this8.id);
+                _this8.clonedOriginCell = null;
+                _this8.clonedObjectId = null;
               }
+              // console.log('regular refreshed', this.originCell, this.objectID)
               (0, _core_api.refresh_chart_position)(_this8.domainPrefix, _this8.objectID, _this8.originCell, _this8.rowSpan, _this8.colSpan);
             }
             _this8.setState({ onCloneDrag: false });

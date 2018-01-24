@@ -73,6 +73,10 @@ export default class Chart extends Component {
     if (!this.chartName && nextProps.chartName) {
       this.chartName = nextProps.chartName;
     }
+
+    if (!this.objectID && nextProps.objectID) {
+      this.objectID = nextProps.objectID;
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -340,11 +344,11 @@ export default class Chart extends Component {
       this.props.setErrorOnClone(clonedChartId);
       const chartDeleteInterval = setInterval(() => {
         renderedClonedChart = document.getElementsByName(clonedChartId)[0];
-        if ( renderedClonedChart ) {
+        if ( renderedClonedChart.querySelector('.chart-name-label').textContent ) {
           this._clearClonedChartOnError();
           clearInterval(chartDeleteInterval);
         }
-      }, 1300);
+      }, 50);
     }
   }
 
@@ -617,6 +621,10 @@ export default class Chart extends Component {
     return chartStyle;
   }
 
+  _resetOriginalChartInMatrix(chartId) {
+    this.props.resetOriginalChartStatus(chartId);
+  }
+
   _style() {
     return {
       postion: 'absolute',
@@ -692,8 +700,11 @@ export default class Chart extends Component {
         onDragStop={(e, d) => {
           this.state.onCloneDrag ? this._checkCloneOverlap(e) : this._checkForOverlap(e);
           if (e['target']['className'] == "chart") {
-            if (this.clonedObjectId) {
+            if (this.clonedObjectId && this.clonedOriginCell) {
               refresh_chart_position(this.domainPrefix,this.clonedObjectId,this.clonedOriginCell,this.rowSpan,this.colSpan);
+              this._resetOriginalChartInMatrix(this.id);
+              this.clonedOriginCell = null;
+              this.clonedObjectId = null;
             }
             refresh_chart_position(this.domainPrefix,this.objectID,this.originCell,this.rowSpan,this.colSpan);
           }

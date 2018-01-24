@@ -9,6 +9,7 @@ import { get_initial_matrix_state } from './core_api.jsx';
 var slide_id = $('#slide-id').val();
 if (slide_id == null){
     var domain_prefix = 'https://pangea-staging.herokuapp.com';
+    // var domain_prefix = 'http://127.0.0.1:8000';
     var slide_id = 55;
     var user_id = 2;
 }

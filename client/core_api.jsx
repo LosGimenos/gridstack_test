@@ -72,7 +72,7 @@ export function add_chart(callback, domain_prefix, slide_id, cell_id, new_chart_
 
         // handle a successful response
         success : function(json) {
-            callback(new_chart_id,json.new_object_id,json.new_chart_name,cells,charts,chartList);
+            callback(new_chart_id,json.new_object_id,json.new_chart_name,cells,charts,chartList,false,null);
             console.log("Added chart");
         },
 
@@ -130,7 +130,7 @@ export function refresh_chart_position(domain_prefix, chart_id, origin_cell, hei
     });
 }
 
-export function replicate_chart(callback, domain_prefix, slide_id, cell_id, original_object_id, new_chart_id, user_id,cells,charts,chartList) {
+export function replicate_chart(callback, domain_prefix, slide_id, cell_id, original_object_id, new_chart_id, user_id,cells,charts,chartList,originalChartId) {
     $.ajax({
         url : domain_prefix + "/ajax_matrix_replicate_chart", // the endpoint
         type : "POST", // http method
@@ -141,7 +141,7 @@ export function replicate_chart(callback, domain_prefix, slide_id, cell_id, orig
 
         // handle a successful response
         success : function(json) {
-            callback(new_chart_id,json.new_object_id,json.new_chart_name,cells,charts,chartList);
+            callback(new_chart_id,json.new_object_id,json.new_chart_name,cells,charts,chartList,true,originalChartId);
             console.log("Replicated chart");
         },
 
@@ -197,10 +197,15 @@ export function endEditName(e,chart_id) {
         newName = input.val();
     var domain_prefix = $('#domain-prefix').val();
     if (domain_prefix == null) {
-        domain_prefix = 'http://127.0.0.1:8000';
+        domain_prefix = 'https://pangea-staging.herokuapp.com';
     }
     else {
-        domain_prefix = 'http://' + domain_prefix;
+        if ($('#domain-prefix').val() == '127.0.0.1:8000') {
+            domain_prefix = 'http://' + domain_prefix;
+        }
+        else {
+            domain_prefix = 'https://' + domain_prefix;
+        }
     }
 
     if (newName != currentName){

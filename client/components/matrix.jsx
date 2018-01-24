@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import Chart from './chart.jsx';
 import Row from './row.jsx';
 import ActionButton from './button.jsx';
-import { add_row, add_col, add_chart, remove_chart, replicate_chart, refreshChartList } from '../core_api.jsx';
+import $ from 'jquery';
+import { add_row, add_col, add_chart, remove_chart, replicate_chart, refreshChartList, refresh_chart_position } from '../core_api.jsx';
 
 export default class Matrix extends Component {
   constructor(props) {
@@ -41,6 +42,8 @@ export default class Matrix extends Component {
     this._swapLocation = this._swapLocation.bind(this);
     this._resetCloneStatus = this._resetCloneStatus.bind(this);
     this._getStartingCell = this._getStartingCell.bind(this);
+    this._setErrorOnClone = this._setErrorOnClone.bind(this);
+    this._resetOriginalChartStatus = this._resetOriginalChartStatus.bind(this);
   }
 
   componentDidMount() {
@@ -62,7 +65,7 @@ export default class Matrix extends Component {
     this.setState({ cells });
   }
 
-  addChart(cellId, row=1, column=1, clonedTo=null, originalObjectId=null) {
+  addChart(cellId, row=1, column=1, clonedTo=null, originalObjectId=null, originalChartId=null) {
     let highestId;
     const chartList = this.state.chartList;
     const charts = this.state.charts;
@@ -91,25 +94,24 @@ export default class Matrix extends Component {
     const newChartId = highestId + 1;
 
     if (clonedTo) {
-      replicate_chart(this.setChartObjectId, this.domainPrefix, this.slideID, cellId, originalObjectId, newChartId, this.userID, cells, charts, chartList);
+      replicate_chart(this.setChartObjectId, this.domainPrefix, this.slideID, cellId, originalObjectId, newChartId, this.userID, cells, charts, chartList, originalChartId);
     }
     else {
       add_chart(this.setChartObjectId, this.domainPrefix, this.slideID, cellId, newChartId, this.userID, cells, charts, chartList);
     }
-    // this.setState({ cells });
-    // this.setState({ charts });
-    // this.setState({ chartList });
 
     const chartId = highestId + 1;
     return { chartId };
   }
 
   // Callback to add backend objectId to chart once ajax call has completed
-  setChartObjectId(newChartId,objectId,chartName,cells,charts,chartList) {
-    // const charts = this.state.charts;
-    // const chartList = this.state.chartList;
+  setChartObjectId(newChartId,objectId,chartName,cells,charts,chartList,isClone,originalChartId) {
     charts[newChartId]['objectID'] = objectId;
     charts[newChartId]['chartName'] = chartName;
+    if (isClone) {
+      charts[originalChartId]['clonedObjectId'] = objectId;
+      // charts[originalChartId]['clonedOriginCell'] = charts[newChartId]['startingCell'];
+    }
     this.setState({ charts });
     this.setState({ chartList });
     this.setState({ cells });
@@ -303,15 +305,15 @@ export default class Matrix extends Component {
     return startingCellToSwap;
   }
 
-  _swapLocation(x, y, cloneId, originCell, originCells) {
+  _swapLocation(x, y, cloneId, originCell, originCells, originalId) {
     const charts = this.state.charts;
 
     charts[cloneId]['startingX'] = x;
     charts[cloneId]['startingY'] = y;
     charts[cloneId]['startingCell'] = originCell;
     charts[cloneId]['originCells'] = originCells;
-
     charts[cloneId]['cloned'] = true;
+    charts[originalId]['clonedOriginCell'] = originCell;
 
     this.setState({ charts });
   }
@@ -320,6 +322,23 @@ export default class Matrix extends Component {
     const charts = this.state.charts;
 
     delete charts[cloneId]['cloned']
+
+    this.setState({ charts });
+  }
+
+  _resetOriginalChartStatus(chartId) {
+    const charts = this.state.charts;
+
+    charts[chartId]['clonedOriginCell'] = null;
+    charts[chartId]['clonedObjectId'] = null;
+
+    this.setState({ charts });
+  }
+
+  _setErrorOnClone(cloneId) {
+    const charts = this.state.charts;
+
+    charts[cloneId]['errorOnClone'] = true;
 
     this.setState({ charts });
   }
@@ -346,7 +365,7 @@ export default class Matrix extends Component {
     return this.state.chartList.map((chartId, index) => {
       const chartInfo = this.state.charts[chartId];
       const originCell = chartInfo['startingCell'];
-      const { x, y } = this._getDOMLocationOfCell(originCell);
+      let { x, y } = this._getDOMLocationOfCell(originCell);
       let startingColumnSpan = 1;
       let startingRowSpan = 1;
       let startingWidth;
@@ -382,6 +401,7 @@ export default class Matrix extends Component {
           key={chartId}
           id={chartInfo.id}
           originCell={chartInfo.startingCell}
+          clonedOriginCell={chartInfo.clonedOriginCell}
           originCells={chartInfo.originCells}
           startingX={x}
           startingY={y}
@@ -405,7 +425,11 @@ export default class Matrix extends Component {
           cloned={chartInfo.cloned}
           resetCloneStatus={this._resetCloneStatus}
           getStartingCell={this._getStartingCell}
+          errorOnClone={chartInfo.errorOnClone}
+          setErrorOnClone={this._setErrorOnClone}
+          resetOriginalChartStatus={this._resetOriginalChartStatus}
           objectID={chartInfo.objectID}
+          clonedObjectId={chartInfo.clonedObjectId}
           chartName={chartInfo.chartName}
           domainPrefix={this.domainPrefix}
         />
